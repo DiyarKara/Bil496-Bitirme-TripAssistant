@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+    <script>
+        function clearLoginForm() {
+            document.getElementById("loginForm").reset();
+        }
+    </script>
+</head>
+<body onload="clearLoginForm()">
+    <div class="container">
+        <header>
+            <h1>Login</h1>
+        </header>
+        <form method="post" id="loginForm" class="form-container">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="submit" value="Login" class="submit-btn">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            <p>{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </form>
+    </div>
+</body>
+</html>
