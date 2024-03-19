@@ -8,6 +8,12 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.error('Save chat button not found');
     }
+    fetch('/get_chats')
+    .then(response => response.json())
+    .then(data => {
+        savedChats = data;
+        updateChatLogList();
+    });
 });
 
 document.getElementById('chatForm').addEventListener('submit', function(event) {
@@ -20,10 +26,38 @@ document.getElementById('chatForm').addEventListener('submit', function(event) {
         addMessageToChat('user-message', message);
         chatInput.value = '';
 
-        // Here you can integrate an actual chatbot response.
+        
+
         setTimeout(function() {
-            addMessageToChat('chatbot-message', "This is a static response. Integrate with a chatbot API for dynamic replies.");
+            fetch('/process_message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({message: message})
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Response:', data); // Debugging line
+                // Display the results in your chat interface
+                addMessageToChat('chatbot-message', data[0].content);
+            })
+            .catch(error => {
+                console.error('Error:', error); // Error handling
+            });
         }, 1000);
+    }
+});
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    var newChatButton = document.getElementById('newChatButton');
+    if (newChatButton) {
+        newChatButton.addEventListener('click', function() {
+            // Create a new chat log
+            createNewChatLog();
+        });
     }
 });
 
@@ -46,47 +80,78 @@ var savedChats = [];
 var chatIdCounter = 1;
 var currentChatId = null; 
 
+console.log("chat log list is: ", chatLogList)
+
 saveChatButton.addEventListener('click', function() {
     var chatMessages = document.querySelectorAll('.chat-box .message');
-    var chatLogMessages = Array.from(chatMessages).map(message => message.textContent);
+    var chatLogMessages = Array.from(chatMessages).map(function(messageElement) {
+        return messageElement.textContent;
+    });
+
+    var payload = {
+        messages: chatLogMessages
+    };
+
+    if (currentChatId) {
+        payload.chat_log_id = currentChatId;
+    }
 
     fetch('/save_chat', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({messages: chatLogMessages})
+        body: JSON.stringify(payload)
     })
-    .then(response => response.json())
-    .then(data => {
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(data) {
         if (data.success && data.chat_log_id) {
-            // Add new chat log to the list
-            var chatLogList = document.querySelector('.chat-log-list');
-            var logItem = document.createElement('div');
-            logItem.textContent = 'Chat ' + data.chat_log_id;
-            logItem.className = 'log-item';
-            logItem.onclick = function() {
-                displayChatLog(data.chat_log_id);
+            var updatedLog = {
+                id: data.chat_log_id,
+                messages: chatLogMessages
             };
-            chatLogList.appendChild(logItem);
+
+            var existingLogIndex = savedChats.findIndex(log => log.id === data.chat_log_id);
+            if (existingLogIndex >= 0) {
+                // Update existing log
+                savedChats[existingLogIndex] = updatedLog;
+            } else {
+                // Add new log
+                savedChats.push(updatedLog);
+            }
+
+            // Update the chat log list in UI
+            updateChatLogList();
+
+            console.log('Chat saved with ID:', data.chat_log_id);
+        } else {
+            console.error('Error saving chat:', data.error);
         }
+    })
+    .catch(function(error) {
+        console.error('Failed to save chat:', error);
     });
 });
 
 function updateChatLogList() {
-    // Get the chat controls container to preserve it
-    var chatControls = document.getElementById('chatControls');
+    // Ensure chatLogList is defined
+    if (!chatLogList) {
+        console.error('Chat log list element not found');
+        return;
+    }
 
-    // Clear existing logs, but preserve the chat controls
+    // Clear existing logs
     chatLogList.innerHTML = '';
-    chatLogList.appendChild(chatControls);
 
-    savedChats.forEach(function(log, index) {
+    // Iterate over savedChats and create log items
+    savedChats.forEach(function(log) {
         var logItem = document.createElement('div');
         logItem.textContent = 'Chat ' + log.id;
         logItem.className = 'log-item';
         logItem.onclick = function() {
-            displayChatLog(index);
+            displayChatLog(log.id);
         };
         chatLogList.appendChild(logItem);
     });
@@ -95,6 +160,8 @@ function updateChatLogList() {
 function displayChatLog(chatLogId) {
     console.log("Trying to display chat log with ID:", chatLogId);
 
+    console.log("saved chats: ", savedChats)
+    currentChatId = chatLogId;
     var selectedLog = savedChats.find(log => log.id === chatLogId);
     if (!selectedLog) {
         console.error("No chat log found with ID:", chatLogId);
@@ -111,14 +178,54 @@ function displayChatLog(chatLogId) {
         chatBox.appendChild(messageDiv);
     });
 }
-var element = document.getElementById('yourElementId');
-if (element) {
-    element.addEventListener('click', yourFunction);
-} else {
-    console.error('Element not found: yourElementId');
+
+function createNewChatLog() {
+    // Optionally, send a request to the server to create a new chat log
+    fetch('/save_chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({messages: []})  // Sending an empty message array
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.chat_log_id) {
+            var newChatLog = {
+                id: data.chat_log_id,
+                messages: []
+            };
+            savedChats.push(newChatLog);
+            addChatLogToList(newChatLog);
+
+            // Set this new chat as the current chat
+            currentChatId = data.chat_log_id;
+            
+            // Clear the chat box for the new chat
+            var chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML = '';
+
+            // Focus on the chat input field
+            var chatInput = document.getElementById('chatInput');
+            chatInput.value = '';
+            chatInput.focus();
+        } else {
+            console.error('Error creating new chat:', data.error);
+        }
+    })
+    .catch(function(error) {
+        console.error('Failed to create new chat:', error);
+    });
 }
-document.getElementById('newChat').addEventListener('click', function() {
-    document.getElementById('chatBox').innerHTML = '';
-    currentChatId = null; // Reset currentChatId for a new chat session
-});
+
+function addChatLogToList(chatLog) {
+    var chatLogList = document.querySelector('.chat-log-list');
+    var logItem = document.createElement('div');
+    logItem.textContent = 'Chat ' + chatLog.id;
+    logItem.className = 'log-item';
+    logItem.onclick = function() {
+        displayChatLog(chatLog.id);
+    };
+    chatLogList.appendChild(logItem);
+}
 

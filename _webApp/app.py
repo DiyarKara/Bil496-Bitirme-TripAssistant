@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 from flask_migrate import Migrate
 
+from chatbot import similarity_search
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://diyar:1234@localhost/TripAssistantDb'
 app.config['SECRET_KEY'] = '123456'
@@ -24,16 +26,31 @@ class ChatLog(db.Model):
 
 @app.route('/')
 def index():
+    print("index pageeeeee")
     return render_template('index.html')
 @app.route('/chat')
 def chat():
+    print("ROUTE IS CHAT")
     if 'user_id' not in session:
         flash('You must be logged in to view the chat.')
         return redirect(url_for('login'))
     
     user_id = session['user_id']
+    print("USER ID IS: ", user_id)
     chat_logs = ChatLog.query.filter_by(user_id=user_id).all()
+    print("chat logs are: ", chat_logs)
     return render_template('chat.html', chat_logs=chat_logs)
+
+@app.route('/get_chats')
+def get_chats():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    user_id = session['user_id']
+    chat_logs = ChatLog.query.filter_by(user_id=user_id).all()
+    # Convert chat logs to a JSON-friendly format
+    chats = [{'id': log.id, 'messages': log.messages} for log in chat_logs]
+    return jsonify(chats)
 
 @app.route('/about')
 def about():
@@ -112,16 +129,38 @@ def save_chat():
 
     user_id = session['user_id']
     messages = request.json.get('messages')
+    chat_log_id = request.json.get('chat_log_id')  # Get chat log ID
+    print("chat log id in save: ", chat_log_id)
+    if chat_log_id:
+        print("in if")
+        # Update existing chat log
+        chat_log = ChatLog.query.get(chat_log_id)
+        print("chat log query: ", chat_log)
+        if chat_log and chat_log.user_id == user_id:
+            print("chat_log.user_id: ", chat_log.user_id)
+            chat_log.messages = messages
+        else:
+            return jsonify({'error': 'Chat log not found'}), 404
+    else:
+        # Create a new chat log
+        print("create new chat log")
+        chat_log = ChatLog(user_id=user_id, messages=messages)
+        db.session.add(chat_log)
 
-    new_chat_log = ChatLog(user_id=user_id, messages=messages)
-    db.session.add(new_chat_log)
     db.session.commit()
-
-    return jsonify({'success': 'Chat saved', 'chat_log_id': new_chat_log.id})
+    return jsonify({'success': 'Chat saved', 'chat_log_id': chat_log.id})
 
 @app.route('/routes')
 def routes():
     return render_template('routes.html')
+
+@app.route('/process_message', methods=['POST'])
+def process_message():
+    print("its in process message")
+    message = request.json.get('message')
+    results = similarity_search(message)
+    print("results are: ", results)
+    return jsonify(results)
 
 
 if __name__ == '__main__':

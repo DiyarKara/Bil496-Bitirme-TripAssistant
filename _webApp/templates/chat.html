@@ -9,13 +9,15 @@
         <!-- Existing header content -->
     </header>
     <div class="chat-interface">
-        <aside class="chat-log-list">
-            {% for log in chat_logs %}
-                <div class="log-item" onclick="displayChatLog({{ log.id }})">
-                    Chat {{ log.id }}
-                </div>
-            {% endfor %}
-            <!-- Saved chat logs will be listed here -->
+        <aside class="chat-sidebar">
+            <button id="newChatButton">New Chat</button>
+            <div class="chat-log-list">
+                {% for log in chat_logs %}
+                    <div class="log-item" onclick="displayChatLog({{ log.id }})">
+                        Chat {{ log.id }}
+                    </div>
+                {% endfor %}
+            </div>
         </aside>
         <div class="chat-container">
             <div class="chat-box" id="chatBox">
