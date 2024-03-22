@@ -3,6 +3,18 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 from flask_migrate import Migrate
+from langchain.document_loaders import PyPDFLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+from langchain.chains.question_answering import load_qa_chain
+from langchain.llms import OpenAI
+from langchain.chains import ConversationalRetrievalChain
+from langchain.document_loaders import DirectoryLoader
+from PyPDF2 import PdfReader
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.chat_models import ChatOpenAI
+from langchain.memory import ConversationBufferMemory
 
 from chatbot import similarity_search
 
@@ -154,14 +166,68 @@ def save_chat():
 def routes():
     return render_template('routes.html')
 
+
+def get_pdf_text(pdf_docs):
+    text = ""
+    for pdf in pdf_docs:
+        pdf_reader = PdfReader(pdf)
+        for page in pdf_reader.pages:
+            text += page.extract_text()
+    return text
+
+def get_text_chunks(text):
+    text_splitter = CharacterTextSplitter(
+        separator="\n",
+        chunk_size=1000,
+        chunk_overlap=200,
+        length_function=len
+    )
+    chunks = text_splitter.split_text(text)
+    return chunks
+
+def get_vectorstore(text_chunks):
+    embeddings = OpenAIEmbeddings()
+    # embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
+    vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
+    return vectorstore
+
+def get_conversation_chain(vectorstore):
+    llm = ChatOpenAI()
+    # llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
+
+    memory = ConversationBufferMemory(
+        memory_key='chat_history', return_messages=True)
+    conversation_chain = ConversationalRetrievalChain.from_llm(
+        llm=llm,
+        retriever=vectorstore.as_retriever(),
+        memory=memory
+    )
+    return conversation_chain
+
+pdf_docs = ["C:\\Users\\diyar\\Desktop\\bil496\\webapp\\romePdf\\rome_guide.pdf", "C:\\Users\\diyar\\Desktop\\bil496\\webapp\\romePdf\\WhereRome-AUG2020Web.pdf"]  # PDF file paths
+raw_text = get_pdf_text(pdf_docs)
+text_chunks = get_text_chunks(raw_text)
+print("text chunk len: ", len(text_chunks))
+vectorstore = get_vectorstore(text_chunks)
+conversation_chain = get_conversation_chain(vectorstore)
+
+
 @app.route('/process_message', methods=['POST'])
 def process_message():
     print("its in process message")
     message = request.json.get('message')
-    results = similarity_search(message)
-    print("results are: ", results)
-    return jsonify(results)
 
+    try:
+        response = conversation_chain({'question': message})
+        print("response is: ", response)
+        # Assuming the last message in chat_history is the system's response
+        last_message = response['chat_history'][-1].content if response['chat_history'] else 'No response'
+        print("last message: ", last_message)
+        return jsonify({'response': last_message})
+    except Exception as e:
+        # Handle potential exceptions
+        print("Error processing message:", e)
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     db.create_all()

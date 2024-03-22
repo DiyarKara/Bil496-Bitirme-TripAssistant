@@ -1,4 +1,5 @@
 import os
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from transformers import GPT2TokenizerFast
@@ -10,6 +11,11 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.llms import OpenAI
 from langchain.chains import ConversationalRetrievalChain
 from langchain.document_loaders import DirectoryLoader
+from PyPDF2 import PdfReader
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.chat_models import ChatOpenAI
+from langchain.memory import ConversationBufferMemory
+
 
 # Initialize these components when your app starts
 

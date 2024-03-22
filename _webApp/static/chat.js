@@ -40,7 +40,11 @@ document.getElementById('chatForm').addEventListener('submit', function(event) {
             .then(data => {
                 console.log('Response:', data); // Debugging line
                 // Display the results in your chat interface
-                addMessageToChat('chatbot-message', data[0].content);
+                if (data.response) {
+                    addMessageToChat('chatbot-message', data.response);
+                } else {
+                    console.error('No response received');
+                }
             })
             .catch(error => {
                 console.error('Error:', error); // Error handling
