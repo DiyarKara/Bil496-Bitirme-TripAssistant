@@ -15,6 +15,7 @@ from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
+from googletrans import Translator
 
 from chatbot import similarity_search
 
@@ -228,6 +229,14 @@ def process_message():
         # Handle potential exceptions
         print("Error processing message:", e)
         return jsonify({'error': str(e)}), 500
+
+@app.route('/translate', methods=['POST'])
+def translate():
+    translator = Translator()
+    text_to_translate = request.form['text']
+    translated_text = translator.translate(text_to_translate, src='en', dest='tr').text
+    return render_template('result.html', translated_text=translated_text)
+
 
 if __name__ == '__main__':
     db.create_all()
