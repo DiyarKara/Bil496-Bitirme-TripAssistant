@@ -35,3 +35,37 @@
     height: 10%;
     text-align: center;
   }
+
+  #back-button {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    z-index: 5;
+    background-color: #4CAF50; 
+    color: white;
+    padding: 10px 20px;
+    border: none; 
+    border-radius: 5px;
+    font-size: 16px; 
+    cursor: pointer; 
+  }
+
+  #back-button:hover {
+    background-color: #45a049; 
+  }
+
+  #logout-button {
+    position: absolute;
+    top: 30px;
+    right: 10px; 
+    padding: 10px;
+    background-color: #f44336;
+    color: white; 
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#logout-button:hover {
+    background-color: #d32f2f; 
+}

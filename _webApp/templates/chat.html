@@ -6,7 +6,9 @@
 </head>
 <body>
     <header class="navigation-bar">
-        <!-- Existing header content -->
+        {% if session['user_id'] %}
+            <div id="logout-button" onclick="window.location.href='/logout'">Logout</div>
+        {% endif %}
     </header>
     <div class="chat-interface">
         <aside class="chat-sidebar">
@@ -30,6 +32,8 @@
             </form>
         </div>
     </div>
+    <button id="deleteChatButton" class="delete-chat-btn">Delete Chat</button>
+    <div id="back-button" onclick="window.location.href='/dashboard'">Back to Dashboard</div>
     <script src="static/chat.js"></script>
 </body>
 </html>

@@ -1,9 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Your code here
     var saveChatButton = document.getElementById('saveChat');
     if (saveChatButton) {
         saveChatButton.addEventListener('click', function() {
-            // Event handler code
+            
         });
     } else {
         console.error('Save chat button not found');
@@ -38,8 +37,7 @@ document.getElementById('chatForm').addEventListener('submit', function(event) {
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Response:', data); // Debugging line
-                // Display the results in your chat interface
+                console.log('Response:', data);
                 if (data.response) {
                     addMessageToChat('chatbot-message', data.response);
                 } else {
@@ -47,7 +45,7 @@ document.getElementById('chatForm').addEventListener('submit', function(event) {
                 }
             })
             .catch(error => {
-                console.error('Error:', error); // Error handling
+                console.error('Error:', error); 
             });
         }, 1000);
     }
@@ -172,6 +170,15 @@ function displayChatLog(chatLogId) {
         return;
     }
 
+    var chatLogItems = document.querySelectorAll('.chat-log-list .log-item');
+    chatLogItems.forEach(item => {
+        if(item.textContent === 'Chat ' + chatLogId){
+            item.classList.add('selected-chat-log');
+        } else {
+            item.classList.remove('selected-chat-log');
+        }
+    });
+
     console.log("Selected chat log:", selectedLog);
     var chatBox = document.getElementById('chatBox');
     chatBox.innerHTML = '';
@@ -231,5 +238,45 @@ function addChatLogToList(chatLog) {
         displayChatLog(chatLog.id);
     };
     chatLogList.appendChild(logItem);
+}
+
+
+document.getElementById('deleteChatButton').addEventListener('click', function() {
+    if (currentChatId) {
+        if (confirm('Are you sure you want to delete this chat?')) {
+            deleteChatLog(currentChatId);
+        }
+    } else {
+        alert('No chat selected!');
+    }
+});
+
+function deleteChatLog(chatLogId) {
+    fetch('/delete_chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({chat_log_id: chatLogId})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            removeChatLogFromList(chatLogId);
+            alert('Chat deleted successfully!');
+            var chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML = '';
+        } else {
+            console.error('Error deleting chat:', data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Failed to delete chat:', error);
+    });
+}
+
+function removeChatLogFromList(chatLogId) {
+    savedChats = savedChats.filter(log => log.id !== chatLogId);
+    updateChatLogList();
 }
 
