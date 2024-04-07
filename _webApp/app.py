@@ -17,11 +17,13 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 import atexit
 from flask.sessions import SessionInterface
+from flask_cors import CORS
 
 from chatbot import similarity_search
 import requests
 
 app = Flask(__name__)
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://diyar:1234@localhost/TripAssistantDb'
 app.config['SECRET_KEY'] = '123456'
 
@@ -111,20 +113,24 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    print("asdasdasd")
     # If user is already logged in, log them out before showing the login screen.
     if 'user_id' in session:
         session.clear()
         flash('You have been logged out.')
 
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        
+        data = request.json
+        print(request)
+        username = data.get('username')
+        password = data.get('password')
+        print(username)
+        print(password)
         user = User.query.filter_by(username=username, password=password).first()
         if user:
             session['user_id'] = user.id  # Store the user's ID in the session
             session['username'] = user.username
-            return redirect(url_for('dashboard'))
+            return jsonify({"message":"Success"}),200
         else:
             flash('Invalid username or password. Please try again.')
 
