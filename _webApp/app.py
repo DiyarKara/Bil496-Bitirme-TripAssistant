@@ -180,7 +180,8 @@ def save_chat():
 @app.route('/routes')
 def routes():
     if 'user_id' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
+        flash('You must be logged in to view the routes.')
+        return redirect(url_for('login'))
 
     user_id = session['user_id']
     return render_template('routes.html')
@@ -267,7 +268,8 @@ def delete_chat():
 @app.route('/translate')
 def translate():
     if 'user_id' not in session:
-        return jsonify({'error': 'Unauthorized'}), 401
+        flash('You must be logged in to view the translate.')
+        return redirect(url_for('login'))
     return render_template('translate.html')
 
 

@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="static/translate.css">
 </head>
 <body>
+    {% if session['user_id'] %}
+        <div id="logout-button" onclick="window.location.href='/logout'">Logout</div>
+    {% endif %}
     <div class="translate-container">
         <textarea id="sourceText" placeholder="Enter text to translate..."></textarea>
         <select id="sourceLanguage">
@@ -30,6 +33,7 @@
         <button id="translateButton">Translate</button>
         <textarea id="translatedText" placeholder="Translation will appear here..." readonly></textarea>
     </div>
+    <div id="back-button" onclick="window.location.href='/dashboard'">Back to Dashboard</div>
     <script src="static/translate.js"></script>
 </body>
 </html>
