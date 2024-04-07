@@ -1,0 +1,136 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.page-container {
+    text-align: center;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+nav h1 {
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #333;
+    margin: 0;
+}
+
+nav a {
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+nav a:hover {
+    background-color: #0056b3;
+}
+
+main {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 60px; /* Adjust based on header size */
+    box-sizing: border-box;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 400px; /* Adjust this value as needed */
+    margin: auto;
+    padding: 20px;
+    box-shadow: none; /* Optional: Adjust or remove as needed */
+}
+
+.form-container h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.form-container input[type="text"],
+.form-container input[type="email"],
+.form-container input[type="password"] {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 10px; /* Adjust the margin to space out elements */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%; /* Matches the input fields width */
+    margin: 20px auto; /* Adds margin to the bottom */
+}
+
+.back-btn, .submit-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.back-btn {
+    background-color: red;
+    color: white;
+}
+
+.back-btn:hover {
+    background-color: darkred;
+}
+
+.submit-btn {
+    background-color: #007bff;
+    color: white;
+}
+
+.submit-btn:hover {
+    background-color: #0056b3;
+}
+
+.messages p {
+    color: red;
+    margin: 10px 0;
+}
+.nav-link {
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.nav-link:hover {
+    background-color: #0056b3;
+}
