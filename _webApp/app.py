@@ -19,6 +19,7 @@ import atexit
 from flask.sessions import SessionInterface
 
 from chatbot import similarity_search
+import requests
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://diyar:1234@localhost/TripAssistantDb'
@@ -262,6 +263,45 @@ def delete_chat():
     else:
         return jsonify({'error': 'Chat log not found or unauthorized'}), 404
     
+
+@app.route('/translate')
+def translate():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    return render_template('translate.html')
+
+
+API_KEY = "AIzaSyBy7-Dv-9Sq0stiPpCcAy-ztRu3sO997Yw" # Replace with your actual API key
+
+@app.route('/translate_text', methods=['POST'])
+def translate_text():
+    data = request.json
+    source_text = data['text']
+    source_lang = data['sourceLang']
+    target_lang = data['targetLang']
+
+    url = "https://translation.googleapis.com/language/translate/v2"
+    
+    # Parameters for the API request
+    params = {
+        'q': source_text,
+        'source': source_lang,
+        'target': target_lang,
+        'key': API_KEY
+    }
+
+    # Making the request to the Google Translate API
+    response = requests.get(url, params=params)
+    
+    # Check if the request was successful
+    if response.status_code == 200:
+        translation_data = response.json()
+        translation = translation_data['data']['translations'][0]['translatedText']
+        return jsonify({'translation': translation})
+    else:
+        # Handle the error or return a message to the frontend
+        return jsonify({'error': 'Failed to translate text'}), response.status_code
+
 
 
 if __name__ == '__main__':
