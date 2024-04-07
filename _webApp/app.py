@@ -80,7 +80,7 @@ def get_chats():
 
 @app.route('/about')
 def about():
-    return 'About Us Page Content'
+    return render_template('about.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
