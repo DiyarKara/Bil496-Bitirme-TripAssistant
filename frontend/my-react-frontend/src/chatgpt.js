@@ -36,6 +36,7 @@ function ChatGpt() {
         throw new Error('Network response was not ok');
       }
       const chats = await response.json();
+      
       // Assuming the backend returns chats in the required format
       setPreviousChats(chats.map(chat => ({ title: `Chat ${chat.id}`, id: chat.id })));
     } catch (error) {
@@ -49,8 +50,11 @@ function ChatGpt() {
   }, [fetchChats]); // Empty dependency array means this effect runs only once after the initial render
 
   // Function to handle click on a chat item
-  const backToHistoryPrompt = (title) => {
-    console.log(`Back to chat: ${title}`); // Implement your navigation logic here
+
+  const backToHistoryPrompt = (uniqueTitle) => {
+    setCurrentTitle(uniqueTitle);
+    setMessage(null);
+    setText("");
   };
 
   const toggleSidebar = useCallback(() => {
@@ -109,6 +113,14 @@ function ChatGpt() {
   }, []);
 
   useEffect(() => {
+    const storedChats = localStorage.getItem("previousChats");
+
+    if (storedChats) {
+      setLocalChats(JSON.parse(storedChats));
+    }
+  }, []);
+
+  useEffect(() => {
     if (!currentTitle && text && message) {
       setCurrentTitle(text);
     }
@@ -127,15 +139,24 @@ function ChatGpt() {
       };
 
       setPreviousChats((prevChats) => [...prevChats, newChat, responseMessage]);
+      setLocalChats((prevChats) => [...prevChats, newChat, responseMessage]);
 
-      const updatedChats = [...previousChats, newChat, responseMessage];
+      const updatedChats = [...localChats, newChat, responseMessage];
       localStorage.setItem("previousChats", JSON.stringify(updatedChats));
     }
   }, [message, currentTitle]);
 
-  const currentChat = (previousChats).filter(
+  const currentChat = (localChats || previousChats).filter(
     (prevChat) => prevChat.title === currentTitle
   );
+
+  const uniqueTitles = Array.from(
+    new Set(previousChats.map((prevChat) => prevChat.title).reverse())
+  );
+
+  const localUniqueTitles = Array.from(
+    new Set(localChats.map((prevChat) => prevChat.title).reverse())
+  ).filter((title) => !uniqueTitles.includes(title));
   return(
   <div className="ChatGpt">
       <div className="container">
