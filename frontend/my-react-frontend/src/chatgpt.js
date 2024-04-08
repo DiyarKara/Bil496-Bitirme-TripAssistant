@@ -76,30 +76,15 @@ function ChatGpt() {
       if (!response.ok) throw new Error('Message processing failed');
 
       const data = await response.json();
-      setMessage(data.response); // Adapt based on your backend response
-
-      const userMessage = {
-        title: currentTitle || text, // Fallback to text if no title is set
-        role: "user",
-        content: text,
-      };
-  
-      // Construct the server response message for UI display
-      const responseMessage = {
-        title: currentTitle || text, // Fallback to text if no title is set
-        role: "gpt", // Adjust according to your role naming convention
-        content: data.response,
-      };
-  
-      // Update chat history state to include the new messages
-      setPreviousChats((prevChats) => [...prevChats, userMessage, responseMessage]);
-      setLocalChats((prevChats) => [...prevChats, userMessage, responseMessage]);
-  
-      // Optionally, update local storage or any persistent state as needed
-      const updatedChats = [...localChats, userMessage, responseMessage];
-      localStorage.setItem("previousChats", JSON.stringify(updatedChats));
-  
-      setText(""); // Clear input after message is sent
+      setMessage(data.message); // Adapt based on your backend response
+        setTimeout(() => {
+          scrollToLastItem.current?.lastElementChild?.scrollIntoView({
+            behavior: "smooth",
+          });
+        }, 1);
+        setTimeout(() => {
+          setText("");
+        }, 2);
     } catch (error) {
       setErrorText(error.toString());
       console.error('Submit error:', error);
