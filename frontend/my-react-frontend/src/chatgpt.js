@@ -49,7 +49,7 @@ function ChatGpt() {
         return [...acc, ...chatMessages]; // Append processed messages to accumulator
       }, []);
   
-      setPreviousChats(formattedChats);
+      //setPreviousChats(formattedChats);
     } catch (error) {
       console.error('Failed to fetch chats:', error);
     }
@@ -87,7 +87,7 @@ function ChatGpt() {
           'Content-Type': 'application/json',
         },
         //body: JSON.stringify({ message: text }),
-        body: JSON.stringify(localStorage.getItem("previousChats")),
+        body: JSON.stringify(storedChats)
       });
 
       if (!response.ok) throw new Error('Message processing failed');
