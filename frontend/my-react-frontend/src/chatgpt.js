@@ -43,7 +43,7 @@ function ChatGpt() {
         const chatMessages = chat.messages.map((message, index) => ({
           id: chat.id, // Assuming you want to keep track of the chat ID for each message
           title: `Chat ${chat.id}`,
-          role: index % 2 === 0 ? 'user' : 'system', // Even index for user, odd for system
+          role: index % 2 === 0 ? 'user' : 'assistant', // Even index for user, odd for system
           content: message,
         }));
         return [...acc, ...chatMessages]; // Append processed messages to accumulator
@@ -86,7 +86,8 @@ function ChatGpt() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: text }),
+        //body: JSON.stringify({ message: text }),
+        body: JSON.stringify(storedChats),
       });
 
       if (!response.ok) throw new Error('Message processing failed');
