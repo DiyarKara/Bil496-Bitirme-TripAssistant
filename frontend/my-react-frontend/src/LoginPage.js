@@ -4,11 +4,8 @@ import { Link } from 'react-router-dom';
 import './Style.css'; // Adjust the path according to your project structure
 import config from './config';
 import { useAuth } from './AuthContext';
-import { useDispatch } from 'react-redux';
-import { setUserInfo } from './userActions';
 
 const LoginPage = () => {
-    const dispatch = useDispatch();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [messages, setMessages] = useState([]);
@@ -37,7 +34,6 @@ const LoginPage = () => {
                 setMessageType('messages-success');
                 setMessages(['Login successful']); // Set message type to success
                 login(data);
-                dispatch(setUserInfo(data));
                 setTimeout(() => {
                     navigate('/home'); // Replace '/home' with your home route
                 }, 1000);
