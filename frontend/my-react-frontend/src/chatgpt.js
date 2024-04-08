@@ -61,7 +61,6 @@ function ChatGpt() {
     try {
       const response = await fetch(`${config.backendURL}/process_message`, {
         method: 'POST',
-        credentials: 'include', // for session cookies
         headers: {
           'Content-Type': 'application/json',
         },
