@@ -37,13 +37,19 @@ function ChatGpt() {
       }
       const chats = await response.json();
       
-      if (chats.length > 0) {
-        const latestChat = chats[chats.length - 1];
-        setPreviousChats([{ title: `Chat ${latestChat.id}`, id: latestChat.id, messages: latestChat.messages }]);
-      } else {
-        // If no chats are returned, you could optionally start a new chat log here
-        // Or just leave previousChats as an empty array
-      }
+      // Process each chat to format it for the frontend
+      const formattedChats = chats.reduce((acc, chat) => {
+        // Process each message in the chat
+        const chatMessages = chat.messages.map((message, index) => ({
+          id: chat.id, // Assuming you want to keep track of the chat ID for each message
+          title: `Chat ${chat.id}`,
+          role: index % 2 === 0 ? 'user' : 'assistant', // Even index for user, odd for system
+          content: message,
+        }));
+        return [...acc, ...chatMessages]; // Append processed messages to accumulator
+      }, []);
+  
+      setPreviousChats(formattedChats);
     } catch (error) {
       console.error('Failed to fetch chats:', error);
     }
@@ -80,7 +86,7 @@ function ChatGpt() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ message: text })
         //body: JSON.stringify(localStorage.getItem("previousChats")),
       });
 
@@ -128,8 +134,8 @@ function ChatGpt() {
   }, []);
 
   useEffect(() => {
-    if (previousChats.length > 0 && !currentTitle) {
-      setCurrentTitle(previousChats[0].title);
+    if (!currentTitle && text && message) {
+      setCurrentTitle(text);
     }
 
     if (currentTitle && text && message) {
