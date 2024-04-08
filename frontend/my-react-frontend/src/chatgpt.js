@@ -136,7 +136,14 @@ function ChatGpt() {
       });
     }
   }, [message, currentTitle, text]);
+  
+  useEffect(() => {
+    const storedChats = localStorage.getItem("previousChats");
 
+    if (storedChats) {
+      setLocalChats(JSON.parse(storedChats));
+    }
+  }, []);
   const currentChat = ( previousChats).filter(
     (prevChat) => prevChat.title === currentTitle
   );
