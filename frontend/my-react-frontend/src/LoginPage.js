@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import './Style.css'; // Adjust the path according to your project structure
 import config from './config';
+import { useAuth } from './AuthContext';
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -30,10 +31,9 @@ const LoginPage = () => {
 
             if (response.ok) {
                 clearLoginForm();
-                setMessageType('success');
+                setMessageType('messages-success');
                 setMessages(['Login successful']); // Set message type to success
-                const userData = await response.json();
-                login(userData);
+                login(data);
                 setTimeout(() => {
                     navigate('/home'); // Replace '/home' with your home route
                 }, 1000);
@@ -42,7 +42,7 @@ const LoginPage = () => {
             }
         } catch (error) {
             setMessages([error.message]);
-            setMessageType('error');
+            setMessageType('messages-error');
         }
     };
 
@@ -73,7 +73,7 @@ const LoginPage = () => {
                         <input type="submit" value="Login" className="submit-btn" />
                     </div>
                     {messages.length > 0 && (
-                        <div className={`messages ${messageType}`}>
+                        <div className={`${messageType}`}>
                             {messages.map((message, index) => (
                                 <p key={index}>{message}</p>
                             ))}
