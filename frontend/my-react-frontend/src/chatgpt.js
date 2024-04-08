@@ -18,6 +18,7 @@ function ChatGpt() {
   const [message, setMessage] = useState(null);
   const [currentTitle, setCurrentTitle] = useState(null);
   const [isResponseLoading, setIsResponseLoading] = useState(false);
+  const [localChats, setLocalChats] = useState([]);
   const [errorText, setErrorText] = useState("");
   const [isShowSidebar, setIsShowSidebar] = useState(false);
   const scrollToLastItem = useRef(null);
@@ -136,7 +137,7 @@ function ChatGpt() {
       });
     }
   }, [message, currentTitle, text]);
-  
+
   useEffect(() => {
     const storedChats = localStorage.getItem("previousChats");
 
