@@ -134,7 +134,7 @@ function App() {
   ).filter((title) => !uniqueTitles.includes(title));
 
   return (
-    <>
+    <div className="ChatGpt">
       <div className="container">
         <section className={`sidebar ${isShowSidebar ? "open" : ""}`}>
           <div className="sidebar-header" onClick={createNewChat} role="button">
@@ -286,7 +286,7 @@ function App() {
           </div>
         </section>
       </div>
-    </>
+    </div>
   );
 }
 
