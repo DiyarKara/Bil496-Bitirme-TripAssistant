@@ -50,10 +50,8 @@ function ChatGpt() {
       console.error('Fetch chat history error:', error);
       setErrorText('Failed to load chat history.');
     }
-  }, [user]);
-  useEffect(() => {
-    console.log('User state on component mount:', user);
-  }, []);
+  }, [user.id]);
+
   const submitHandler = async (e) => {
     e.preventDefault();
     if (!text) return;

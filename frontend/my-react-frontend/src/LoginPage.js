@@ -12,7 +12,7 @@ const LoginPage = () => {
     const [messageType, setMessageType] = useState(''); // new state to track the type of message
     const navigate = useNavigate();
     const { login } = useAuth();
-
+    const { user } = useAuth();
     const handleSubmit = async (e) => {
         e.preventDefault();
         setMessages([]);
@@ -34,6 +34,7 @@ const LoginPage = () => {
                 setMessageType('messages-success');
                 setMessages(['Login successful']); // Set message type to success
                 login(data);
+                console.log(user);
                 setTimeout(() => {
                     navigate('/home'); // Replace '/home' with your home route
                 }, 1000);
