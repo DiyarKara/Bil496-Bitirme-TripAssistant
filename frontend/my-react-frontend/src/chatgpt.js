@@ -3,6 +3,7 @@ import { BiPlus, BiUser, BiSend, BiSolidUserCircle } from 'react-icons/bi';
 import { MdOutlineArrowLeft, MdOutlineArrowRight } from 'react-icons/md';
 import './chatgpt.css';
 import config from './config';
+import { useAuth } from './AuthContext';
 
 function ChatGpt() {
   const [text, setText] = useState('');
@@ -14,7 +15,7 @@ function ChatGpt() {
   const scrollToLastItem = useRef(null);
   const [localChats, setLocalChats] = useState([]);
   const [currentTitle, setCurrentTitle] = useState(null);
-
+  const { user } = useAuth();
   
   const createNewChat = () => {
     setMessage(null);
@@ -34,13 +35,13 @@ function ChatGpt() {
   // API Base URL - Adjust to match your Flask backend URL
 
   const fetchChatHistory = useCallback(async () => {
+    const queryParams = new URLSearchParams({ userId: user.id }).toString();
     try {
-      const response = await fetch(`${config.backendURL}/get_chats`, {
+      const response = await fetch(`${config.backendURL}/get_chats?${queryParams}`, {
         method: 'GET',
-        credentials: 'include', // for session cookies
         headers: {
           'Content-Type': 'application/json',
-        },
+        }
       });
       if (!response.ok) throw new Error('Failed to fetch chats');
       const chats = await response.json();
@@ -49,7 +50,7 @@ function ChatGpt() {
       console.error('Fetch chat history error:', error);
       setErrorText('Failed to load chat history.');
     }
-  }, []);
+  }, [user.id]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -61,7 +62,6 @@ function ChatGpt() {
     try {
       const response = await fetch(`${config.backendURL}/process_message`, {
         method: 'POST',
-        credentials: 'include', // for session cookies
         headers: {
           'Content-Type': 'application/json',
         },
