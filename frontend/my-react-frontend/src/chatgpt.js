@@ -3,7 +3,6 @@ import { BiPlus, BiUser, BiSend, BiSolidUserCircle } from 'react-icons/bi';
 import { MdOutlineArrowLeft, MdOutlineArrowRight } from 'react-icons/md';
 import './chatgpt.css';
 import config from './config';
-import { useAuth } from './AuthContext';
 
 function ChatGpt() {
   const [text, setText] = useState('');
@@ -15,7 +14,7 @@ function ChatGpt() {
   const scrollToLastItem = useRef(null);
   const [localChats, setLocalChats] = useState([]);
   const [currentTitle, setCurrentTitle] = useState(null);
-  const { user } = useAuth();
+
   
   const createNewChat = () => {
     setMessage(null);
@@ -35,17 +34,13 @@ function ChatGpt() {
   // API Base URL - Adjust to match your Flask backend URL
 
   const fetchChatHistory = useCallback(async () => {
-    if (!user || !user.id) {
-      console.log("User info not available yet.");
-      return; // Exit if user or user.id is not available
-    }
-    const queryParams = new URLSearchParams({ userId: user.id }).toString();
     try {
-      const response = await fetch(`${config.backendURL}/get_chats?${queryParams}`, {
+      const response = await fetch(`${config.backendURL}/get_chats`, {
         method: 'GET',
+        credentials: 'include', // for session cookies
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
       });
       if (!response.ok) throw new Error('Failed to fetch chats');
       const chats = await response.json();
@@ -54,8 +49,7 @@ function ChatGpt() {
       console.error('Fetch chat history error:', error);
       setErrorText('Failed to load chat history.');
     }
-  }, [user?.id]); // Dependency array updated to react on changes to user.id
-  
+  }, []);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -67,6 +61,7 @@ function ChatGpt() {
     try {
       const response = await fetch(`${config.backendURL}/process_message`, {
         method: 'POST',
+        credentials: 'include', // for session cookies
         headers: {
           'Content-Type': 'application/json',
         },
@@ -76,15 +71,11 @@ function ChatGpt() {
       if (!response.ok) throw new Error('Message processing failed');
 
       const data = await response.json();
-      setMessage(data.message); // Adapt based on your backend response
-        setTimeout(() => {
-          scrollToLastItem.current?.lastElementChild?.scrollIntoView({
-            behavior: "smooth",
-          });
-        }, 1);
-        setTimeout(() => {
-          setText("");
-        }, 2);
+      setMessage(data.response); // Adapt based on your backend response
+
+      // Further logic to update chat UI after message submission
+      // ...
+
     } catch (error) {
       setErrorText(error.toString());
       console.error('Submit error:', error);
@@ -92,6 +83,7 @@ function ChatGpt() {
       setIsResponseLoading(false);
     }
   };
+
   useEffect(() => {
     fetchChatHistory();
   }, [fetchChatHistory]);
@@ -155,7 +147,6 @@ function ChatGpt() {
     new Set(localChats.map((prevChat) => prevChat.title).reverse())
   ).filter((title) => !uniqueTitles.includes(title));
 
-
   return (
     <div className="ChatGpt">
       <div className="container">
@@ -179,6 +170,18 @@ function ChatGpt() {
               </>
             )}
             {/* Example for locally stored chats */}
+            {localChats.length > 0 && (
+              <>
+                <p>Previous</p>
+                <ul>
+                  {localChats.map((chat, idx) => (
+                    <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
+                      {chat.title}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </div>
           <div className="sidebar-info">
             <div className="sidebar-info-upgrade">
@@ -187,7 +190,7 @@ function ChatGpt() {
             </div>
             <div className="sidebar-info-user">
               <BiSolidUserCircle size={20} />
-              <p>Welcome ${user.username}</p>
+              <p>User</p>
             </div>
           </div>
         </section>
