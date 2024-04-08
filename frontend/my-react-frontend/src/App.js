@@ -7,7 +7,7 @@ import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage'; 
 import WelcomePage from './WelcomePage';
 import HomePage from './HomePage';
-import Page1 from './Page1';
+import Translate from './Translate';
 import ChatGpt from './chatgpt';
 import MapPage from './MapPage';
 
@@ -38,7 +38,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-        <Route path="/page1" element={<ProtectedRoute><Page1 /></ProtectedRoute>} />
+        <Route path="/translate" element={<ProtectedRoute><Translate /></ProtectedRoute>} />
         <Route path="/chat" element={<ProtectedRoute><ChatGpt /></ProtectedRoute>} />
         <Route path="/map" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
         {/* Add more routes and wrap them with ProtectedRoute as needed for protection */}
