@@ -8,12 +8,14 @@ import {
 import { BiPlus, BiUser, BiSend, BiSolidUserCircle } from "react-icons/bi";
 import { MdOutlineArrowLeft, MdOutlineArrowRight } from "react-icons/md";
 import './chatgpt.css';
+import { useAuth } from './AuthContext';
 import config from './config';
 
 function ChatGpt() {
   const [text, setText] = useState("");
-  const [message, setMessage] = useState(null);
   const [previousChats, setPreviousChats] = useState([]);
+  const { user } = useAuth();
+  const [message, setMessage] = useState(null);
   const [localChats, setLocalChats] = useState([]);
   const [currentTitle, setCurrentTitle] = useState(null);
   const [isResponseLoading, setIsResponseLoading] = useState(false);
@@ -26,11 +28,29 @@ function ChatGpt() {
     setText("");
     setCurrentTitle(null);
   };
+  const fetchChats = useCallback(async () => {
+    const queryParams = new URLSearchParams({ userId: user.id }).toString();
+    try {
+      const response = await fetch(`${config.backendURL}/get_chats?${queryParams}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const chats = await response.json();
+      // Assuming the backend returns chats in the required format
+      setPreviousChats(chats.map(chat => ({ title: `Chat ${chat.id}`, id: chat.id })));
+    } catch (error) {
+      console.error('Failed to fetch chats:', error);
+    }
+  },[user?.id]);
 
-  const backToHistoryPrompt = (uniqueTitle) => {
-    setCurrentTitle(uniqueTitle);
-    setMessage(null);
-    setText("");
+  // Use useEffect to fetch chats when the component mounts
+  useEffect(() => {
+    fetchChats();
+  }, [fetchChats]); // Empty dependency array means this effect runs only once after the initial render
+
+  // Function to handle click on a chat item
+  const backToHistoryPrompt = (title) => {
+    console.log(`Back to chat: ${title}`); // Implement your navigation logic here
   };
 
   const toggleSidebar = useCallback(() => {
@@ -89,14 +109,6 @@ function ChatGpt() {
   }, []);
 
   useEffect(() => {
-    const storedChats = localStorage.getItem("previousChats");
-
-    if (storedChats) {
-      setLocalChats(JSON.parse(storedChats));
-    }
-  }, []);
-
-  useEffect(() => {
     if (!currentTitle && text && message) {
       setCurrentTitle(text);
     }
@@ -115,24 +127,15 @@ function ChatGpt() {
       };
 
       setPreviousChats((prevChats) => [...prevChats, newChat, responseMessage]);
-      setLocalChats((prevChats) => [...prevChats, newChat, responseMessage]);
 
-      const updatedChats = [...localChats, newChat, responseMessage];
+      const updatedChats = [...previousChats, newChat, responseMessage];
       localStorage.setItem("previousChats", JSON.stringify(updatedChats));
     }
   }, [message, currentTitle]);
 
-  const currentChat = (localChats || previousChats).filter(
+  const currentChat = (previousChats).filter(
     (prevChat) => prevChat.title === currentTitle
   );
-
-  const uniqueTitles = Array.from(
-    new Set(previousChats.map((prevChat) => prevChat.title).reverse())
-  );
-
-  const localUniqueTitles = Array.from(
-    new Set(localChats.map((prevChat) => prevChat.title).reverse())
-  ).filter((title) => !uniqueTitles.includes(title));
   return(
   <div className="ChatGpt">
       <div className="container">
