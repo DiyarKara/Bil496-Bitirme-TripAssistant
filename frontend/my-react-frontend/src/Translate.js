@@ -10,11 +10,16 @@ function Translate() {
   const languages = [
     { code: 'en', name: 'English' },
     { code: 'es', name: 'Spanish' },
+    { code: 'it', name: 'Italian' },
+    { code: 'fr', name: 'French' },
+    { code: 'de', name: 'German' },
+    { code: 'ru', name: 'Russian' },
+    { code: 'tr', name: 'Turkish' }
     // Add other languages here
   ];
 
   const handleTranslate = () => {
-    fetch('/translate_text', {
+    fetch('http://localhost:5000/translate_text', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
