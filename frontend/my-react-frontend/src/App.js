@@ -10,6 +10,8 @@ import HomePage from './HomePage';
 import Translate from './Translate';
 import ChatGpt from './chatgpt';
 import MapPage from './MapPage';
+import { Provider } from 'react-redux';
+import store from './store';
 
 function AppWrapper() {
     // Use AuthProvider at the top level to provide authentication context throughout the app
