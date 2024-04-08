@@ -127,6 +127,7 @@ function ChatGpt() {
       };
 
       setPreviousChats((prevChats) => [...prevChats, newChat, responseMessage]);
+      setLocalChats((prevChats) => [...prevChats, newChat, responseMessage]);
 
       const updatedChats = [...localChats, newChat, responseMessage];
       localStorage.setItem("previousChats", JSON.stringify(updatedChats));
