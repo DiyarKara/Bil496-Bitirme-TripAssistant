@@ -16,9 +16,9 @@ function ChatGpt() {
   const [previousChats, setPreviousChats] = useState([]);
   const { user } = useAuth();
   const [message, setMessage] = useState(null);
+  const [localChats, setLocalChats] = useState([]);
   const [currentTitle, setCurrentTitle] = useState(null);
   const [isResponseLoading, setIsResponseLoading] = useState(false);
-  const [localChats, setLocalChats] = useState([]);
   const [errorText, setErrorText] = useState("");
   const [isShowSidebar, setIsShowSidebar] = useState(false);
   const scrollToLastItem = useRef(null);
@@ -28,7 +28,6 @@ function ChatGpt() {
     setText("");
     setCurrentTitle(null);
   };
-
   const fetchChats = useCallback(async () => {
     const queryParams = new URLSearchParams({ userId: user.id }).toString();
     try {
@@ -49,10 +48,20 @@ function ChatGpt() {
       console.error('Failed to fetch chats:', error);
     }
   }, [user?.id]);
+  
 
+  // Use useEffect to fetch chats when the component mounts
   useEffect(() => {
     fetchChats();
-  }, [fetchChats]);
+  }, [fetchChats]); // Empty dependency array means this effect runs only once after the initial render
+
+  // Function to handle click on a chat item
+
+  const backToHistoryPrompt = (uniqueTitle) => {
+    setCurrentTitle(uniqueTitle);
+    setMessage(null);
+    setText("");
+  };
 
   const toggleSidebar = useCallback(() => {
     setIsShowSidebar((prev) => !prev);
@@ -71,22 +80,24 @@ function ChatGpt() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: text }),
+        //body: JSON.stringify({ message: text }),
+        body: JSON.stringify(localStorage.getItem("previousChats")),
       });
 
       if (!response.ok) throw new Error('Message processing failed');
 
       const data = await response.json();
-      setMessage(data); // Adapt based on your backend response
+      setErrorText(false);
       setErrorText("");
-      setTimeout(() => {
-        scrollToLastItem.current?.lastElementChild?.scrollIntoView({
-          behavior: "smooth",
-        });
-      }, 1);
-      setTimeout(() => {
-        setText("");
-      }, 2);
+      setMessage(data); // Adapt based on your backend response
+        setTimeout(() => {
+          scrollToLastItem.current?.lastElementChild?.scrollIntoView({
+            behavior: "smooth",
+          });
+        }, 1);
+        setTimeout(() => {
+          setText("");
+        }, 2);
     } catch (error) {
       setErrorText(error.toString());
       console.error('Submit error:', error);
@@ -100,43 +111,13 @@ function ChatGpt() {
       setIsShowSidebar(window.innerWidth <= 640);
     };
     handleResize();
+
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
-
-  // Removed the useEffect related to localChats as it's no longer relevant
-  const backToHistoryPrompt = (uniqueTitle) => {
-    setCurrentTitle(uniqueTitle);
-    setMessage(null);
-    setText("");
-  };
-  // Handle title and message for current chat
-  useEffect(() => {
-    if (previousChats.length > 0 && !currentTitle) {
-      setCurrentTitle(previousChats[0].title);
-    }
-
-    if (currentTitle && text && message) {
-      const newMessage = {
-        title: currentTitle,
-        role: "user",
-        content: text,
-      };
-      
-      const responseMessage = {
-        title: currentTitle,
-        role: message.role,
-        content: message.content,
-      };
-
-      // Update the messages in the latest chat
-      setPreviousChats((prevChats) => {
-        const updatedChats = [...prevChats];
-        updatedChats[0].messages.push(newMessage, responseMessage);
-        return updatedChats;
-      });
-    }
-  }, [message, currentTitle, text]);
 
   useEffect(() => {
     const storedChats = localStorage.getItem("previousChats");
@@ -145,13 +126,44 @@ function ChatGpt() {
       setLocalChats(JSON.parse(storedChats));
     }
   }, []);
-  const currentChat = ( previousChats).filter(
+
+  useEffect(() => {
+    if (previousChats.length > 0 && !currentTitle) {
+      setCurrentTitle(previousChats[0].title);
+    }
+
+    if (currentTitle && text && message) {
+      const newChat = {
+        title: currentTitle,
+        role: "user",
+        content: text,
+      };
+
+      const responseMessage = {
+        title: currentTitle,
+        role: message.role,
+        content: message.content,
+      };
+
+      setPreviousChats((prevChats) => [...prevChats, newChat, responseMessage]);
+      setLocalChats((prevChats) => [...prevChats, newChat, responseMessage]);
+
+      const updatedChats = [...localChats, newChat, responseMessage];
+      localStorage.setItem("previousChats", JSON.stringify(updatedChats));
+    }
+  }, [message, currentTitle]);
+
+  const currentChat = (localChats || previousChats).filter(
     (prevChat) => prevChat.title === currentTitle
   );
-  setLocalChats((prevChats) => [...prevChats, newChat, responseMessage]);
+
   const uniqueTitles = Array.from(
     new Set(previousChats.map((prevChat) => prevChat.title).reverse())
   );
+
+  const localUniqueTitles = Array.from(
+    new Set(localChats.map((prevChat) => prevChat.title).reverse())
+  ).filter((title) => !uniqueTitles.includes(title));
   return(
   <div className="ChatGpt">
       <div className="container">
@@ -175,6 +187,18 @@ function ChatGpt() {
               </>
             )}
             {/* Example for locally stored chats */}
+            {localChats.length > 0 && (
+              <>
+                <p>Previous</p>
+                <ul>
+                  {localChats.map((chat, idx) => (
+                    <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
+                      {chat.title}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </div>
           <div className="sidebar-info">
             <div className="sidebar-info-upgrade">
