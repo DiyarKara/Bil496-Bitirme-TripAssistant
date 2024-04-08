@@ -32,7 +32,7 @@ const HomePage = () => {
 
   return (
     <ImageContainer>
-      <StyledImage src={image1} onClick={() => navigate('/page1')} alt="Image 1"/>
+      <StyledImage src={image1} onClick={() => navigate('/translate')} alt="Image 1"/>
       <StyledImage src={image3} onClick={() => navigate('/chat')} alt="Image 2"/>
       <StyledImage src={image2} onClick={() => navigate('/map')} alt="Image 3"/>
     </ImageContainer>

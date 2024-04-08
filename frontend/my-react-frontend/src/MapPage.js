@@ -22,11 +22,31 @@ const MapPage = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [destination, setDestination] = useState(null);
   const [directionsResult, setDirectionsResult] = useState(null);
+  const [destinationAddress, setDestinationAddress] = useState('');
 
   const mapRef = useRef();
   const onLoad = useCallback((map) => {
     setMap(map);
   }, []);
+  const handleDestinationChange = (e) => {
+    setDestinationAddress(e.target.value);
+  };
+  const handleFindRoute = () => {
+    if (!destinationAddress) return;
+    const geocoder = new window.google.maps.Geocoder();
+    geocoder.geocode({ 'address': destinationAddress }, (results, status) => {
+      if (status === 'OK') {
+        const destinationCoords = {
+          lat: results[0].geometry.location.lat(),
+          lng: results[0].geometry.location.lng()
+        };
+        setDestination(destinationCoords);
+        calculateAndDisplayRoute(userLocation, destinationCoords);
+      } else {
+        console.error('Geocode was not successful for the following reason: ' + status);
+      }
+    });
+  };
 
   useEffect(() => {
     if (map) {
@@ -75,18 +95,29 @@ const MapPage = () => {
   if (!isLoaded) return <div>Loading maps</div>;
 
   return (
-    
-    <GoogleMap
-      mapContainerStyle={mapContainerStyle}
-      zoom={13}
-      center={defaultCenter}
-      onLoad={onLoad}
-      onClick={onMapClick}
-    >
-      {userLocation && <Marker position={userLocation} />}
-      {destination && <Marker position={destination} />}
-      {directionsResult && <DirectionsRenderer directions={directionsResult} />}
-    </GoogleMap>
+    <div>
+      <GoogleMap
+        mapContainerStyle={mapContainerStyle}
+        zoom={13}
+        center={defaultCenter}
+        onLoad={onLoad}
+        onClick={onMapClick}
+      >
+        {userLocation && <Marker position={userLocation} />}
+        {destination && <Marker position={destination} />}
+        {directionsResult && <DirectionsRenderer directions={directionsResult} />}
+      </GoogleMap>
+      <div id="floating-panel">
+        <b>Destination:</b>
+        <input 
+          type="text" 
+          placeholder="Enter a destination" 
+          value={destinationAddress} 
+          onChange={handleDestinationChange}
+        />
+        <button onClick={handleFindRoute}>Find Route</button>
+      </div>
+    </div>
   );
 };
 

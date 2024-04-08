@@ -96,9 +96,10 @@ const RegisterPage = () => {
                         onChange={e => setPassword(e.target.value)}
                     />
                     <div className="form-actions">
-                        <button type="button" className="back-btn" onClick={handleNavigateHome}>Back</button>
+                    <button type="button" className="back-btn" onClick={handleNavigateHome}>Back</button>
                         <input type="submit" value="Register" className="submit-btn" />
                     </div>
+                    
                     {messages.length > 0 && (
                         <div className={`messages ${messageType}`}>
                             {messages.map((message, index) => (
