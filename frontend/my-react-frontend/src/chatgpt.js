@@ -4,7 +4,6 @@ import { MdOutlineArrowLeft, MdOutlineArrowRight } from 'react-icons/md';
 import './chatgpt.css';
 import config from './config';
 import { useAuth } from './AuthContext';
-import { useSelector } from 'react-redux';
 
 function ChatGpt() {
   const [text, setText] = useState('');
@@ -17,7 +16,7 @@ function ChatGpt() {
   const [localChats, setLocalChats] = useState([]);
   const [currentTitle, setCurrentTitle] = useState(null);
   const { user } = useAuth();
-  const userInfo = useSelector((state) => state.user.userInfo);
+  
   const createNewChat = () => {
     setMessage(null);
     setText("");
@@ -36,7 +35,7 @@ function ChatGpt() {
   // API Base URL - Adjust to match your Flask backend URL
 
   const fetchChatHistory = useCallback(async () => {
-    const queryParams = new URLSearchParams({ userId: userInfo }).toString();
+    const queryParams = new URLSearchParams({ userId: user.id }).toString();
     try {
       const response = await fetch(`${config.backendURL}/get_chats?${queryParams}`, {
         method: 'GET',
@@ -51,7 +50,7 @@ function ChatGpt() {
       console.error('Fetch chat history error:', error);
       setErrorText('Failed to load chat history.');
     }
-  }, [userInfo]);
+  }, [user.id]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
