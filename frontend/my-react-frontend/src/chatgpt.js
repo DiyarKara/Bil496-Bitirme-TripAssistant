@@ -70,7 +70,7 @@ function ChatGpt() {
       if (!response.ok) throw new Error('Message processing failed');
 
       const data = await response.json();
-      setMessage(data.response); // Adapt based on your backend response
+      setMessage(data.message); // Adapt based on your backend response
 
       // Further logic to update chat UI after message submission
       // ...
@@ -127,7 +127,6 @@ function ChatGpt() {
       };
 
       setPreviousChats((prevChats) => [...prevChats, newChat, responseMessage]);
-      setLocalChats((prevChats) => [...prevChats, newChat, responseMessage]);
 
       const updatedChats = [...localChats, newChat, responseMessage];
       localStorage.setItem("previousChats", JSON.stringify(updatedChats));
