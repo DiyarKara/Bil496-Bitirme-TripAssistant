@@ -9,7 +9,9 @@ import WelcomePage from './WelcomePage';
 import HomePage from './HomePage';
 import Translate from './Translate';
 import ChatGpt from './chatgpt';
+import SidebarHistory from './SidebarHistory';
 import MapPage from './MapPage';
+
 
 function AppWrapper() {
     // Use AuthProvider at the top level to provide authentication context throughout the app
@@ -40,6 +42,7 @@ function App() {
         <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
         <Route path="/translate" element={<ProtectedRoute><Translate /></ProtectedRoute>} />
         <Route path="/chat" element={<ChatGpt />} />
+        <Route path="/test" element={<SidebarHistory />} />
         <Route path="/map" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
         {/* Add more routes and wrap them with ProtectedRoute as needed for protection */}
       </Routes>
