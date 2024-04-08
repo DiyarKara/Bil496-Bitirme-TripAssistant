@@ -54,7 +54,7 @@ function ChatGpt() {
       console.error('Fetch chat history error:', error);
       setErrorText('Failed to load chat history.');
     }
-  }, [user]); // Dependency array updated to react on changes to user.id
+  }, [user?.id]); // Dependency array updated to react on changes to user.id
   
 
   const submitHandler = async (e) => {
@@ -88,7 +88,7 @@ function ChatGpt() {
       const responseMessage = {
         title: currentTitle || text, // Fallback to text if no title is set
         role: "gpt", // Adjust according to your role naming convention
-        content: serverResponse,
+        content: data.response,
       };
   
       // Update chat history state to include the new messages
@@ -112,7 +112,7 @@ function ChatGpt() {
     if (user && user.id) {
       fetchChatHistory();
     }
-  }, [fetchChatHistory, user]);
+  }, [fetchChatHistory, user?.id]);
 
   useLayoutEffect(() => {
     const handleResize = () => {
