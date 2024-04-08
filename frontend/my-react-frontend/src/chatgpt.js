@@ -54,7 +54,7 @@ function ChatGpt() {
       console.error('Fetch chat history error:', error);
       setErrorText('Failed to load chat history.');
     }
-  }, [user?.id]); // Dependency array updated to react on changes to user.id
+  }, [user]); // Dependency array updated to react on changes to user.id
   
 
   const submitHandler = async (e) => {
@@ -78,9 +78,28 @@ function ChatGpt() {
       const data = await response.json();
       setMessage(data.response); // Adapt based on your backend response
 
-      // Further logic to update chat UI after message submission
-      // ...
-
+      const userMessage = {
+        title: currentTitle || text, // Fallback to text if no title is set
+        role: "user",
+        content: text,
+      };
+  
+      // Construct the server response message for UI display
+      const responseMessage = {
+        title: currentTitle || text, // Fallback to text if no title is set
+        role: "gpt", // Adjust according to your role naming convention
+        content: serverResponse,
+      };
+  
+      // Update chat history state to include the new messages
+      setPreviousChats((prevChats) => [...prevChats, userMessage, responseMessage]);
+      setLocalChats((prevChats) => [...prevChats, userMessage, responseMessage]);
+  
+      // Optionally, update local storage or any persistent state as needed
+      const updatedChats = [...localChats, userMessage, responseMessage];
+      localStorage.setItem("previousChats", JSON.stringify(updatedChats));
+  
+      setText(""); // Clear input after message is sent
     } catch (error) {
       setErrorText(error.toString());
       console.error('Submit error:', error);
@@ -90,8 +109,10 @@ function ChatGpt() {
   };
 
   useEffect(() => {
-    fetchChatHistory();
-  }, [fetchChatHistory]);
+    if (user && user.id) {
+      fetchChatHistory();
+    }
+  }, [fetchChatHistory, user]);
 
   useLayoutEffect(() => {
     const handleResize = () => {
@@ -108,7 +129,7 @@ function ChatGpt() {
 
   useEffect(() => {
     const storedChats = localStorage.getItem("previousChats");
-
+    console.log(storedChats);
     if (storedChats) {
       setLocalChats(JSON.parse(storedChats));
     }
@@ -144,13 +165,6 @@ function ChatGpt() {
     (prevChat) => prevChat.title === currentTitle
   );
 
-  const uniqueTitles = Array.from(
-    new Set(previousChats.map((prevChat) => prevChat.title).reverse())
-  );
-
-  const localUniqueTitles = Array.from(
-    new Set(localChats.map((prevChat) => prevChat.title).reverse())
-  ).filter((title) => !uniqueTitles.includes(title));
 
   return (
     <div className="ChatGpt">
@@ -174,19 +188,6 @@ function ChatGpt() {
                 </ul>
               </>
             )}
-            {/* Example for locally stored chats */}
-            {localChats.length > 0 && (
-              <>
-                <p>Previous</p>
-                <ul>
-                  {localChats.map((chat, idx) => (
-                    <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
-                      {chat.title}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
           </div>
           <div className="sidebar-info">
             <div className="sidebar-info-upgrade">
@@ -195,7 +196,7 @@ function ChatGpt() {
             </div>
             <div className="sidebar-info-user">
               <BiSolidUserCircle size={20} />
-              <p>User</p>
+              <p>Welcome ${user.username}</p>
             </div>
           </div>
         </section>
