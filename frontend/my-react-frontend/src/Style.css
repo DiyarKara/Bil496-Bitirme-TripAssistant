@@ -134,3 +134,35 @@ main {
 .nav-link:hover {
     background-color: #0056b3;
 }
+
+
+.link-button {
+    background: none;
+    border: none;
+    color: blue; /* Or whatever your link color is */
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.link-button:hover,
+.link-button:focus {
+    text-decoration: none;
+}
+.nav-text {
+    cursor: pointer;
+    font-size: larger;
+    color: #000; /* Or your preferred font color */
+    font-weight: bold; /* Optional, depending on your design */
+    /* Add any other styles to match your navigation bar's design */
+}
+
+.nav-text:hover {
+    text-decoration: underline; /* Optional, to indicate interactivity */
+}
+.messages.success {
+    color: green;
+}
+
+.messages.error {
+    color: red;
+}
