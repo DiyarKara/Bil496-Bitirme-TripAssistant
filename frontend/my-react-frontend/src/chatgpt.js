@@ -3,90 +3,112 @@ import { BiPlus, BiUser, BiSend, BiSolidUserCircle } from 'react-icons/bi';
 import { MdOutlineArrowLeft, MdOutlineArrowRight } from 'react-icons/md';
 import './chatgpt.css';
 import config from './config';
+import { useAuth } from './AuthContext';
 
 function ChatGpt() {
-  const [text, setText] = useState('');
-  const [message, setMessage] = useState(null);
   const [previousChats, setPreviousChats] = useState([]);
+  const [localChats, setLocalChats] = useState([]);
+  const [isShowSidebar, setIsShowSidebar] = useState(false);
+  const [currentTitle, setCurrentTitle] = useState(null);
+  const [currentChat, setCurrentChat] = useState([]);
+  const [text, setText] = useState('');
   const [isResponseLoading, setIsResponseLoading] = useState(false);
   const [errorText, setErrorText] = useState('');
-  const [isShowSidebar, setIsShowSidebar] = useState(false);
+  const scrollRef = useRef(null);
+  const [message, setMessage] = useState(null);
   const scrollToLastItem = useRef(null);
-  const [localChats, setLocalChats] = useState([]);
-  const [currentTitle, setCurrentTitle] = useState(null);
+  const { user } = useAuth();
 
-  
-  const createNewChat = () => {
-    setMessage(null);
-    setText("");
-    setCurrentTitle(null);
-  };
-
+  // Fetch chats on component mount
+  useEffect(() => {
+    const queryParams = new URLSearchParams({ userId: user.id }).toString();
+    fetch(`${config.backendURL}/get_chats?${queryParams}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setPreviousChats(data.response);
+        // setLocalChats or any other state you might want to set
+      });
+  }, []);
   const backToHistoryPrompt = (uniqueTitle) => {
     setCurrentTitle(uniqueTitle);
     setMessage(null);
     setText("");
   };
-
   const toggleSidebar = useCallback(() => {
     setIsShowSidebar((prev) => !prev);
   }, []);
-  // API Base URL - Adjust to match your Flask backend URL
 
-  const fetchChatHistory = useCallback(async () => {
-    try {
-      const response = await fetch(`${config.backendURL}/get_chats`, {
-        method: 'GET',
-        credentials: 'include', // for session cookies
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      if (!response.ok) throw new Error('Failed to fetch chats');
-      const chats = await response.json();
-      setPreviousChats(chats); // Adjust according to your backend response structure
-    } catch (error) {
-      console.error('Fetch chat history error:', error);
-      setErrorText('Failed to load chat history.');
-    }
-  }, []);
-
-  const submitHandler = async (e) => {
-    e.preventDefault();
-    if (!text) return;
+  const submitHandler = (event) => {
+    event.preventDefault();
+    
+    if (!text.trim()) return;
+    const message = text.trim();
 
     setIsResponseLoading(true);
-    setErrorText('');
-
-    try {
-      const response = await fetch(`${config.backendURL}/process_message`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: text }),
-      });
-
-      if (!response.ok) throw new Error('Message processing failed');
-
-      const data = await response.json();
-      setMessage(data.response); // Adapt based on your backend response
-      setText("");
-      // Further logic to update chat UI after message submission
-      // ...
-
-    } catch (error) {
-      setErrorText(error.toString());
-      console.error('Submit error:', error);
-    } finally {
-      setIsResponseLoading(false);
-    }
+    fetch(`${config.backendURL}/process_message`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.response) {
+          setCurrentChat((prevChat) => [...prevChat, { role: 'user', content: message }, { role: 'chatbot', content: data.response }]);
+          setText('');
+        } else {
+          setErrorText('No response received');
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        setErrorText('An error occurred while sending the message.');
+      })
+      .finally(() => setIsResponseLoading(false));
   };
 
+  const createNewChat = () => {
+    setIsResponseLoading(true); // Assuming you want to show loading state
+  
+    fetch('/save_chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ messages: [] }) // Sending an empty message array or any initial data required by your backend
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success && data.chat_log_id) {
+        const newChatLog = {
+          id: data.chat_log_id,
+          messages: []
+        };
+        setPreviousChats(prevChats => [...prevChats, newChatLog]);
+        setCurrentChat(newChatLog.messages); // Set the newly created chat as the current chat
+        setCurrentTitle(`Chat ${data.chat_log_id}`); // Optional: set a title for the chat
+        console.log('New chat created with ID:', data.chat_log_id);
+      } else {
+        console.error('Error creating new chat:', data.error);
+        setErrorText('Failed to create new chat.');
+      }
+    })
+    .catch(error => {
+      console.error('Failed to create new chat:', error);
+      setErrorText('An error occurred while creating the chat.');
+    })
+    .finally(() => setIsResponseLoading(false));
+  };
+  
+  // Automatically scroll to the last message
   useEffect(() => {
-    fetchChatHistory();
-  }, [fetchChatHistory]);
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [currentChat]);
 
+  // Define other functionalities such as saveChat, createNewChat, deleteChat here similar to the JS implementation
   useLayoutEffect(() => {
     const handleResize = () => {
       setIsShowSidebar(window.innerWidth <= 640);
@@ -99,52 +121,7 @@ function ChatGpt() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
-  useEffect(() => {
-    const storedChats = localStorage.getItem("previousChats");
-
-    if (storedChats) {
-      setLocalChats(JSON.parse(storedChats));
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!currentTitle && text && message) {
-      setCurrentTitle(text);
-    }
-
-    if (currentTitle && text && message) {
-      const newChat = {
-        title: currentTitle,
-        role: "user",
-        content: text,
-      };
-
-      const responseMessage = {
-        title: currentTitle,
-        role: message.role,
-        content: message.content,
-      };
-
-      setPreviousChats((prevChats) => [...prevChats, newChat, responseMessage]);
-      setLocalChats((prevChats) => [...prevChats, newChat, responseMessage]);
-
-      const updatedChats = [...localChats, newChat, responseMessage];
-      localStorage.setItem("previousChats", JSON.stringify(updatedChats));
-    }
-  }, [message, currentTitle]);
-
-  const currentChat = (localChats || previousChats).filter(
-    (prevChat) => prevChat.title === currentTitle
-  );
-
-  const uniqueTitles = Array.from(
-    new Set(previousChats.map((prevChat) => prevChat.title).reverse())
-  );
-
-  const localUniqueTitles = Array.from(
-    new Set(localChats.map((prevChat) => prevChat.title).reverse())
-  ).filter((title) => !uniqueTitles.includes(title));
+  // Your JSX goes here, mostly unchanged but with added React structure and logic
 
   return (
     <div className="ChatGpt">
@@ -169,18 +146,6 @@ function ChatGpt() {
               </>
             )}
             {/* Example for locally stored chats */}
-            {localChats.length > 0 && (
-              <>
-                <p>Previous</p>
-                <ul>
-                  {localChats.map((chat, idx) => (
-                    <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
-                      {chat.title}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
           </div>
           <div className="sidebar-info">
             <div className="sidebar-info-upgrade">
@@ -189,7 +154,7 @@ function ChatGpt() {
             </div>
             <div className="sidebar-info-user">
               <BiSolidUserCircle size={20} />
-              <p>User</p>
+              <p>Welcome ${user.username}</p>
             </div>
           </div>
         </section>
