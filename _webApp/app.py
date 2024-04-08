@@ -15,9 +15,11 @@ from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
+
 import atexit
 from flask.sessions import SessionInterface
 from flask_cors import CORS
+
 
 from chatbot import similarity_search
 import requests
@@ -311,6 +313,14 @@ def translate_text():
         # Handle the error or return a message to the frontend
         return jsonify({'error': 'Failed to translate text'}), response.status_code
 
+
+
+@app.route('/translate', methods=['POST'])
+def translate():
+    translator = Translator()
+    text_to_translate = request.form['text']
+    translated_text = translator.translate(text_to_translate, src='en', dest='tr').text
+    return render_template('result.html', translated_text=translated_text)
 
 
 if __name__ == '__main__':
