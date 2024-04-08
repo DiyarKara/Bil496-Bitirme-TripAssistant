@@ -37,10 +37,10 @@ function App() {
         <Route path="/" element={<WelcomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-        <Route path="/page1" element={<ProtectedRoute><Page1 /></ProtectedRoute>} />
-        <Route path="/chat" element={<ProtectedRoute><ChatGpt /></ProtectedRoute>} />
-        <Route path="/map" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/page1" element={<Page1 />} />
+        <Route path="/chat" element={<ChatGpt />} />
+        <Route path="/map" element={<MapPage />} />
         {/* Add more routes and wrap them with ProtectedRoute as needed for protection */}
       </Routes>
     </Router>

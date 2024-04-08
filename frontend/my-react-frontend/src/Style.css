@@ -4,19 +4,31 @@ body, html {
     height: 100%;
     width: 100%;
 }
+body{
+    background-image: url('arkaplan.jpg');
+}
 
 .page-container {
-    text-align: center;
-    height: 100vh;
+    margin-top: 250px;
+    padding: 0;
+    box-sizing: border-box;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 35vh;
+
+
 }
+.page-container p{
+    color: #ffffff; /*  "Welcome to your first trip with TripAssistantAI! Get started by registering or logging in." renk  */
+}
+    
 
 header {
     width: 100%;
     position: fixed;
     top: 0;
-    background-color: white;
+    backdrop-filter: blur(100px);
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     z-index: 1000;
 }
@@ -51,25 +63,24 @@ nav a:hover {
 }
 
 main {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-top: 60px; /* Adjust based on header size */
-    box-sizing: border-box;
+
 }
 
 .form-container {
-    width: 100%;
-    max-width: 400px; /* Adjust this value as needed */
-    margin: auto;
-    padding: 20px;
-    box-shadow: none; /* Optional: Adjust or remove as needed */
+    width:max-content;
+    padding: 25px;
+    height: max-content;
+    background: transparent;
+    border: 2px solid rgba(255,255,255,.2);
+    backdrop-filter: blur(20px);
+    color: #fff;
+    border-radius: 10px;
+
 }
 
 .form-container h2 {
-    color: #333;
-    margin-bottom: 20px;
+    text-align: center;
+    
 }
 
 .form-container input[type="text"],
@@ -78,9 +89,20 @@ main {
     width: 80%;
     padding: 10px;
     margin-bottom: 10px; /* Adjust the margin to space out elements */
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    border: none;
+    outline: none;
+    background: transparent;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 40px;
+    margin-left: 35px;
 }
+.form-container input::placeholder{
+    color: rgb(255, 255, 255);
+}
+.form-container input{
+    color: rgb(255, 255, 255);
+}
+
 
 .form-actions {
     display: flex;
@@ -88,6 +110,8 @@ main {
     align-items: center;
     width: 80%; /* Matches the input fields width */
     margin: 20px auto; /* Adds margin to the bottom */
+    margin-left: 43px;
+    
 }
 
 .back-btn, .submit-btn {
@@ -99,20 +123,24 @@ main {
 }
 
 .back-btn {
+    border-radius: 25px;
     background-color: red;
     color: white;
 }
 
 .back-btn:hover {
+    border-radius: 25px;
     background-color: darkred;
 }
 
 .submit-btn {
+    border-radius: 25px;
     background-color: #007bff;
     color: white;
 }
 
 .submit-btn:hover {
+    border-radius: 25px;
     background-color: #0056b3;
 }
 
@@ -151,7 +179,7 @@ main {
 .nav-text {
     cursor: pointer;
     font-size: larger;
-    color: #000; /* Or your preferred font color */
+    color: rgb(255, 255, 255); /* Or your preferred font color */
     font-weight: bold; /* Optional, depending on your design */
     /* Add any other styles to match your navigation bar's design */
 }
