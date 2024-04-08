@@ -148,7 +148,7 @@ function ChatGpt() {
   const currentChat = ( previousChats).filter(
     (prevChat) => prevChat.title === currentTitle
   );
-
+  setLocalChats((prevChats) => [...prevChats, newChat, responseMessage]);
   const uniqueTitles = Array.from(
     new Set(previousChats.map((prevChat) => prevChat.title).reverse())
   );
