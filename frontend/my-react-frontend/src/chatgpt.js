@@ -80,8 +80,8 @@ function ChatGpt() {
         headers: {
           'Content-Type': 'application/json',
         },
-        //body: JSON.stringify({ message: text }),
-        body: JSON.stringify(localStorage.getItem("previousChats")),
+        body: JSON.stringify({ message: text }),
+        //body: JSON.stringify(localStorage.getItem("previousChats")),
       });
 
       if (!response.ok) throw new Error('Message processing failed');
