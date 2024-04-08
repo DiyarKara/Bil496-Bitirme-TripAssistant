@@ -39,7 +39,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
         <Route path="/translate" element={<ProtectedRoute><Translate /></ProtectedRoute>} />
-        <Route path="/chat" element={<ProtectedRoute><ChatGpt /></ProtectedRoute>} />
+        <Route path="/chat" element={<ChatGpt />} />
         <Route path="/map" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
         {/* Add more routes and wrap them with ProtectedRoute as needed for protection */}
       </Routes>
