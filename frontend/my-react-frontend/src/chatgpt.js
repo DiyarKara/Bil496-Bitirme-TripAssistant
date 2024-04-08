@@ -35,6 +35,10 @@ function ChatGpt() {
   // API Base URL - Adjust to match your Flask backend URL
 
   const fetchChatHistory = useCallback(async () => {
+    if (!user || !user.id) {
+      console.log("User info not available yet.");
+      return; // Exit if user or user.id is not available
+    }
     const queryParams = new URLSearchParams({ userId: user.id }).toString();
     try {
       const response = await fetch(`${config.backendURL}/get_chats?${queryParams}`, {
@@ -50,7 +54,8 @@ function ChatGpt() {
       console.error('Fetch chat history error:', error);
       setErrorText('Failed to load chat history.');
     }
-  }, [user.id]);
+  }, [user?.id]); // Dependency array updated to react on changes to user.id
+  
 
   const submitHandler = async (e) => {
     e.preventDefault();
