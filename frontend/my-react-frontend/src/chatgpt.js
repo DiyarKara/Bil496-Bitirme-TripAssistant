@@ -173,6 +173,19 @@ function ChatGpt() {
                 </ul>
               </>
             )}
+            {/* Example for locally stored chats */}
+            {localChats.length > 0 && (
+              <>
+                <p>Previous</p>
+                <ul>
+                  {localChats.map((chat, idx) => (
+                    <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
+                      {chat.title}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </div>
           <div className="sidebar-info">
             <div className="sidebar-info-upgrade">
