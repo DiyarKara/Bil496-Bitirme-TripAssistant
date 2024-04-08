@@ -70,8 +70,8 @@ function ChatGpt() {
       if (!response.ok) throw new Error('Message processing failed');
 
       const data = await response.json();
-      setMessage(data.message); // Adapt based on your backend response
-
+      setMessage(data.response); // Adapt based on your backend response
+      setText("");
       // Further logic to update chat UI after message submission
       // ...
 
