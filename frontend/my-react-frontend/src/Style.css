@@ -74,10 +74,19 @@ main {
 
 .form-container input[type="text"],
 .form-container input[type="email"],
+.form-container input[type="password"],
+.form-actions { /* Apply the same styling to all inputs and the button container */
+    width: 80%; /* Ensuring all elements have the same width */
+    margin: auto; /* Centering elements within the form */
+    box-sizing: border-box; /* Ensures padding and border are included in the width */
+}
+
+/* If you have specific paddings/margins applied to inputs, apply them to .form-actions too */
+.form-container input[type="text"],
+.form-container input[type="email"],
 .form-container input[type="password"] {
-    width: 80%;
     padding: 10px;
-    margin-bottom: 10px; /* Adjust the margin to space out elements */
+    margin-bottom: 10px; /* Adjust based on your design */
     border: 1px solid #ddd;
     border-radius: 5px;
 }
@@ -86,16 +95,22 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 80%; /* Matches the input fields width */
-    margin: 20px auto; /* Adds margin to the bottom */
+    padding: 0; /* Adjust or remove padding if needed */
+    margin-top: 20px; /* Adjust the top margin to space out from the last input field */
 }
 
 .back-btn, .submit-btn {
-    padding: 10px 20px;
+    flex-grow: 1; /* Ensures buttons grow equally to fill the container */
+    padding: 10px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    margin: 0 10px; /* Adjust the spacing between the buttons */
+}
+.back-btn, .submit-btn {
+    width: calc(50% - 20px); /* Adjusts width to account for margin, ensuring equal width */
+    padding: 10px 20px; /* Ensures equal padding */
 }
 
 .back-btn {
