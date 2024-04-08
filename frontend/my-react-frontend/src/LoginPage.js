@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import './Style.css'; // Adjust the path according to your project structure
 import config from './config';
+import { useAuth } from './AuthContext';
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -10,6 +11,7 @@ const LoginPage = () => {
     const [messages, setMessages] = useState([]);
     const [messageType, setMessageType] = useState(''); // new state to track the type of message
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -29,8 +31,9 @@ const LoginPage = () => {
 
             if (response.ok) {
                 clearLoginForm();
-                setMessages(['Login successful']);
-                setMessageType('success'); // Set message type to success
+                setMessageType('messages-success');
+                setMessages(['Login successful']); // Set message type to success
+                login(data);
                 setTimeout(() => {
                     navigate('/home'); // Replace '/home' with your home route
                 }, 1000);
@@ -39,7 +42,7 @@ const LoginPage = () => {
             }
         } catch (error) {
             setMessages([error.message]);
-            setMessageType('error');
+            setMessageType('messages-error');
         }
     };
 
@@ -70,7 +73,7 @@ const LoginPage = () => {
                         <input type="submit" value="Login" className="submit-btn" />
                     </div>
                     {messages.length > 0 && (
-                        <div className={`messages ${messageType}`}>
+                        <div className={`${messageType}`}>
                             {messages.map((message, index) => (
                                 <p key={index}>{message}</p>
                             ))}
