@@ -18,6 +18,7 @@ from langchain.memory import ConversationBufferMemory
 
 
 # Initialize these components when your app starts
+
 root_dir = "C:\\Users\\diyar\\Desktop\\bil496\\webapp\\romePdf"
 loader = DirectoryLoader(f'{root_dir}', glob="./*.pdf", loader_cls=PyPDFLoader)
 pages = loader.load_and_split()

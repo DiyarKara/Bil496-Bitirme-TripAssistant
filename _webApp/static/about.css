@@ -1,0 +1,66 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    text-align: center; /* Centering all text */
+}
+
+.about-section {
+    padding: 20px;
+    background-color: #fff; /* White background */
+    max-width: 700px; /* Maximum width */
+    margin: 20px auto; /* Centering the about section */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box-shadow for styling */
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 0.5em;
+}
+
+h2 {
+    color: #555;
+    margin-bottom: 0.5em;
+}
+
+p {
+    color: #666;
+}
+
+button {
+    background-color: #e67e22;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 20px; /* Spacing between button and info box */
+}
+
+button:hover {
+    background-color: #cf6d17;
+}
+
+.info-box {
+    background-color: #eee; /* Light grey background */
+    border: 1px solid #ddd; /* Slight border */
+    padding: 10px;
+    margin-bottom: 20px; /* Spacing between info box and contributor boxes */
+}
+
+.contributor {
+    background-color: #eee; /* Light grey background */
+    border: 1px solid #ddd; /* Slight border */
+    padding: 10px;
+    margin-bottom: 10px; /* Spacing between contributor boxes */
+}
+
+/* Add responsiveness */
+@media (max-width: 768px) {
+    .about-section {
+        width: auto; /* Full width on small screens */
+        margin: 20px; /* Smaller margin on small screens */
+    }
+}

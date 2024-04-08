@@ -1,0 +1,62 @@
+/**
+ * v0 by Vercel.
+ * @see https://v0.dev/t/ZbJn1AR2iRM
+ * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
+ */
+import Link from "next/link"
+
+export default function Component() {
+  return (
+    <div className="grid gap-4 w-full max-w-screen-lg items-start lg:grid-cols-3">
+      <div className="relative group">
+        <Link className="absolute inset-0 z-10" href="#">
+          <span className="sr-only">View</span>
+        </Link>
+        <img
+          alt="Faded image"
+          className="faded-image rounded-lg object-cover group-hover:scale-105 transition-transform"
+          height={225}
+          src="/placeholder.svg"
+          style={{
+            aspectRatio: "400/225",
+            objectFit: "cover",
+          }}
+          width={400}
+        />
+      </div>
+      <div className="relative group">
+        <Link className="absolute inset-0 z-10" href="#">
+          <span className="sr-only">View</span>
+        </Link>
+        <img
+          alt="Faded image"
+          className="faded-image rounded-lg object-cover group-hover:scale-105 transition-transform"
+          height={225}
+          src="/placeholder.svg"
+          style={{
+            aspectRatio: "400/225",
+            objectFit: "cover",
+          }}
+          width={400}
+        />
+      </div>
+      <div className="relative group">
+        <Link className="absolute inset-0 z-10" href="#">
+          <span className="sr-only">View</span>
+        </Link>
+        <img
+          alt="Faded image"
+          className="faded-image rounded-lg object-cover group-hover:scale-105 transition-transform"
+          height={225}
+          src="/placeholder.svg"
+          style={{
+            aspectRatio: "400/225",
+            objectFit: "cover",
+          }}
+          width={400}
+        />
+      </div>
+    </div>
+  )
+}
+

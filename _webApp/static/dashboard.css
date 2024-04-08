@@ -1,0 +1,95 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.dashboard-container {
+    width: 80%;
+    max-width: 600px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 40px;
+    color: #333;
+    font-size: 2rem;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.dashboard-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 1.2rem;
+    text-decoration: none;
+    margin: 10px;
+    transition: background-color 0.3s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.chat {
+    background-color: #007bff;
+}
+
+.chat:hover {
+    background-color: #0056b3;
+}
+
+.routes {
+    background-color: #28a745;
+}
+
+.routes:hover {
+    background-color: #218838;
+}
+
+.translate {
+    background-color: #17a2b8;
+}
+
+.translate:hover {
+    background-color: #138496;
+}
+
+#logout-button {
+    position: fixed;
+    top: 10px;
+    right: 10px; 
+    padding: 10px;
+    background-color: #f44336;
+    color: white; 
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#logout-button:hover {
+    background-color: #d32f2f; 
+}
+
+.user-box {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

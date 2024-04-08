@@ -15,11 +15,17 @@ from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
-from googletrans import Translator
+
+import atexit
+from flask.sessions import SessionInterface
+from flask_cors import CORS
+
 
 from chatbot import similarity_search
+import requests
 
 app = Flask(__name__)
+CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://diyar:1234@localhost/TripAssistantDb'
 app.config['SECRET_KEY'] = '123456'
 
@@ -37,10 +43,13 @@ class ChatLog(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     messages = db.Column(db.JSON, nullable=False)  # Storing messages as JSON
 
+
+
 @app.route('/')
 def index():
     print("index pageeeeee")
     return render_template('index.html')
+
 @app.route('/chat')
 def chat():
     print("ROUTE IS CHAT")
@@ -54,6 +63,14 @@ def chat():
     print("chat logs are: ", chat_logs)
     return render_template('chat.html', chat_logs=chat_logs)
 
+@app.route('/dashboard')
+def dashboard():
+    if 'user_id' not in session:
+        flash('Please log in to access the dashboard.')
+        return redirect(url_for('login'))
+    return render_template('dashboard.html')
+
+
 @app.route('/get_chats')
 def get_chats():
     if 'user_id' not in session:
@@ -61,20 +78,21 @@ def get_chats():
 
     user_id = session['user_id']
     chat_logs = ChatLog.query.filter_by(user_id=user_id).all()
-    # Convert chat logs to a JSON-friendly format
+    # Convert chat logs to a JSON format
     chats = [{'id': log.id, 'messages': log.messages} for log in chat_logs]
     return jsonify(chats)
 
 @app.route('/about')
 def about():
-    return 'About Us Page Content'
+    return render_template('about.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        email = request.form['email']
+        data = request.json
+        username = data.get('username')
+        email = data.get('email')
+        password = data.get('password')
         existing_user = User.query.filter_by(username=username).first()
         existing_mail = User.query.filter_by(email=email).first()
         if existing_user:
@@ -91,26 +109,31 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
-        return redirect(url_for('login'))
+        return jsonify({"message": "Registration successful", "status": "success"}), 201
 
     return render_template('register.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    print("asdasdasd")
     # If user is already logged in, log them out before showing the login screen.
     if 'user_id' in session:
         session.clear()
         flash('You have been logged out.')
 
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        
+        data = request.json
+        print(request)
+        username = data.get('username')
+        password = data.get('password')
+        print(username)
+        print(password)
         user = User.query.filter_by(username=username, password=password).first()
         if user:
             session['user_id'] = user.id  # Store the user's ID in the session
-            return redirect(url_for('chat'))
+            session['username'] = user.username
+            return jsonify({"message":"Success"}),200
         else:
             flash('Invalid username or password. Please try again.')
 
@@ -165,6 +188,11 @@ def save_chat():
 
 @app.route('/routes')
 def routes():
+    if 'user_id' not in session:
+        flash('You must be logged in to view the routes.')
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
     return render_template('routes.html')
 
 
@@ -179,7 +207,7 @@ def get_pdf_text(pdf_docs):
 def get_text_chunks(text):
     text_splitter = CharacterTextSplitter(
         separator="\n",
-        chunk_size=1000,
+        chunk_size=1400,
         chunk_overlap=200,
         length_function=len
     )
@@ -229,6 +257,63 @@ def process_message():
         # Handle potential exceptions
         print("Error processing message:", e)
         return jsonify({'error': str(e)}), 500
+    
+
+@app.route('/delete_chat', methods=['POST'])
+def delete_chat():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    chat_log_id = request.json.get('chat_log_id')
+    chat_log = ChatLog.query.get(chat_log_id)
+    if chat_log and chat_log.user_id == session['user_id']:
+        db.session.delete(chat_log)
+        db.session.commit()
+        return jsonify({'success': 'Chat deleted'})
+    else:
+        return jsonify({'error': 'Chat log not found or unauthorized'}), 404
+    
+
+@app.route('/translate')
+def translate():
+    if 'user_id' not in session:
+        flash('You must be logged in to view the translate.')
+        return redirect(url_for('login'))
+    return render_template('translate.html')
+
+
+API_KEY = "AIzaSyBy7-Dv-9Sq0stiPpCcAy-ztRu3sO997Yw" # Replace with your actual API key
+
+@app.route('/translate_text', methods=['POST'])
+def translate_text():
+    data = request.json
+    source_text = data['text']
+    source_lang = data['sourceLang']
+    target_lang = data['targetLang']
+
+    url = "https://translation.googleapis.com/language/translate/v2"
+    
+    # Parameters for the API request
+    params = {
+        'q': source_text,
+        'source': source_lang,
+        'target': target_lang,
+        'key': API_KEY
+    }
+
+    # Making the request to the Google Translate API
+    response = requests.get(url, params=params)
+    
+    # Check if the request was successful
+    if response.status_code == 200:
+        translation_data = response.json()
+        translation = translation_data['data']['translations'][0]['translatedText']
+        return jsonify({'translation': translation})
+    else:
+        # Handle the error or return a message to the frontend
+        return jsonify({'error': 'Failed to translate text'}), response.status_code
+
+
 
 @app.route('/translate', methods=['POST'])
 def translate():
