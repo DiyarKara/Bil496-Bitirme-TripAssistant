@@ -159,10 +159,10 @@ main {
 .nav-text:hover {
     text-decoration: underline; /* Optional, to indicate interactivity */
 }
-.messages.success {
+.messages .success {
     color: green;
 }
 
-.messages.error {
+.messages .error {
     color: red;
 }
