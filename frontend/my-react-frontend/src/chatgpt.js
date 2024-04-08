@@ -16,7 +16,6 @@ function ChatGpt() {
   const [previousChats, setPreviousChats] = useState([]);
   const { user } = useAuth();
   const [message, setMessage] = useState(null);
-  const [localChats, setLocalChats] = useState([]);
   const [currentTitle, setCurrentTitle] = useState(null);
   const [isResponseLoading, setIsResponseLoading] = useState(false);
   const [errorText, setErrorText] = useState("");
@@ -28,6 +27,7 @@ function ChatGpt() {
     setText("");
     setCurrentTitle(null);
   };
+
   const fetchChats = useCallback(async () => {
     const queryParams = new URLSearchParams({ userId: user.id }).toString();
     try {
@@ -37,37 +37,21 @@ function ChatGpt() {
       }
       const chats = await response.json();
       
-      // Process each chat to format it for the frontend
-      const formattedChats = chats.reduce((acc, chat) => {
-        // Process each message in the chat
-        const chatMessages = chat.messages.map((message, index) => ({
-          id: chat.id, // Assuming you want to keep track of the chat ID for each message
-          title: `Chat ${chat.id}`,
-          role: index % 2 === 0 ? 'user' : 'assistant', // Even index for user, odd for system
-          content: message,
-        }));
-        return [...acc, ...chatMessages]; // Append processed messages to accumulator
-      }, []);
-  
-      //setPreviousChats(formattedChats);
+      if (chats.length > 0) {
+        const latestChat = chats[chats.length - 1];
+        setPreviousChats([{ title: `Chat ${latestChat.id}`, id: latestChat.id, messages: latestChat.messages }]);
+      } else {
+        // If no chats are returned, you could optionally start a new chat log here
+        // Or just leave previousChats as an empty array
+      }
     } catch (error) {
       console.error('Failed to fetch chats:', error);
     }
   }, [user?.id]);
-  
 
-  // Use useEffect to fetch chats when the component mounts
   useEffect(() => {
     fetchChats();
-  }, [fetchChats]); // Empty dependency array means this effect runs only once after the initial render
-
-  // Function to handle click on a chat item
-
-  const backToHistoryPrompt = (uniqueTitle) => {
-    setCurrentTitle(uniqueTitle);
-    setMessage(null);
-    setText("");
-  };
+  }, [fetchChats]);
 
   const toggleSidebar = useCallback(() => {
     setIsShowSidebar((prev) => !prev);
@@ -86,24 +70,22 @@ function ChatGpt() {
         headers: {
           'Content-Type': 'application/json',
         },
-        //body: JSON.stringify({ message: text }),
-        body: JSON.stringify(localStorage.getItem("previousChats"))
+        body: JSON.stringify({ message: text }),
       });
 
       if (!response.ok) throw new Error('Message processing failed');
 
       const data = await response.json();
-      setErrorText(false);
-      setErrorText("");
       setMessage(data); // Adapt based on your backend response
-        setTimeout(() => {
-          scrollToLastItem.current?.lastElementChild?.scrollIntoView({
-            behavior: "smooth",
-          });
-        }, 1);
-        setTimeout(() => {
-          setText("");
-        }, 2);
+      setErrorText("");
+      setTimeout(() => {
+        scrollToLastItem.current?.lastElementChild?.scrollIntoView({
+          behavior: "smooth",
+        });
+      }, 1);
+      setTimeout(() => {
+        setText("");
+      }, 2);
     } catch (error) {
       setErrorText(error.toString());
       console.error('Submit error:', error);
@@ -117,59 +99,51 @@ function ChatGpt() {
       setIsShowSidebar(window.innerWidth <= 640);
     };
     handleResize();
-
     window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Removed the useEffect related to localChats as it's no longer relevant
+  const backToHistoryPrompt = (uniqueTitle) => {
+    setCurrentTitle(uniqueTitle);
+    setMessage(null);
+    setText("");
+  };
+  // Handle title and message for current chat
   useEffect(() => {
-    const storedChats = localStorage.getItem("previousChats");
-
-    if (storedChats) {
-      setLocalChats(JSON.parse(storedChats));
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!currentTitle && text && message) {
-      setCurrentTitle(text);
+    if (previousChats.length > 0 && !currentTitle) {
+      setCurrentTitle(previousChats[0].title);
     }
 
     if (currentTitle && text && message) {
-      const newChat = {
+      const newMessage = {
         title: currentTitle,
         role: "user",
         content: text,
       };
-
+      
       const responseMessage = {
         title: currentTitle,
         role: message.role,
         content: message.content,
       };
 
-      setPreviousChats((prevChats) => [...prevChats, newChat, responseMessage]);
-      setLocalChats((prevChats) => [...prevChats, newChat, responseMessage]);
-
-      const updatedChats = [...localChats, newChat, responseMessage];
-      localStorage.setItem("previousChats", JSON.stringify(updatedChats));
+      // Update the messages in the latest chat
+      setPreviousChats((prevChats) => {
+        const updatedChats = [...prevChats];
+        updatedChats[0].messages.push(newMessage, responseMessage);
+        return updatedChats;
+      });
     }
-  }, [message, currentTitle]);
+  }, [message, currentTitle, text]);
 
-  const currentChat = (localChats || previousChats).filter(
+  const currentChat = ( previousChats).filter(
     (prevChat) => prevChat.title === currentTitle
   );
 
   const uniqueTitles = Array.from(
     new Set(previousChats.map((prevChat) => prevChat.title).reverse())
   );
-
-  const localUniqueTitles = Array.from(
-    new Set(localChats.map((prevChat) => prevChat.title).reverse())
-  ).filter((title) => !uniqueTitles.includes(title));
   return(
   <div className="ChatGpt">
       <div className="container">
@@ -193,18 +167,6 @@ function ChatGpt() {
               </>
             )}
             {/* Example for locally stored chats */}
-            {localChats.length > 0 && (
-              <>
-                <p>Previous</p>
-                <ul>
-                  {localChats.map((chat, idx) => (
-                    <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
-                      {chat.title}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
           </div>
           <div className="sidebar-info">
             <div className="sidebar-info-upgrade">
