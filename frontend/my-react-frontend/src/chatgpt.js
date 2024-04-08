@@ -37,12 +37,24 @@ function ChatGpt() {
       }
       const chats = await response.json();
       
-      // Assuming the backend returns chats in the required format
-      setPreviousChats(chats.map(chat => ({ title: `Chat ${chat.id}`, id: chat.id })));
+      // Process each chat to format it for the frontend
+      const formattedChats = chats.reduce((acc, chat) => {
+        // Process each message in the chat
+        const chatMessages = chat.messages.map((message, index) => ({
+          id: chat.id, // Assuming you want to keep track of the chat ID for each message
+          title: `Chat ${chat.id}`,
+          role: index % 2 === 0 ? 'user' : 'system', // Even index for user, odd for system
+          content: message,
+        }));
+        return [...acc, ...chatMessages]; // Append processed messages to accumulator
+      }, []);
+  
+      setPreviousChats(formattedChats);
     } catch (error) {
       console.error('Failed to fetch chats:', error);
     }
-  },[user?.id]);
+  }, [user?.id]);
+  
 
   // Use useEffect to fetch chats when the component mounts
   useEffect(() => {
