@@ -7,9 +7,10 @@ import {
 } from "react";
 import { BiPlus, BiUser, BiSend, BiSolidUserCircle } from "react-icons/bi";
 import { MdOutlineArrowLeft, MdOutlineArrowRight } from "react-icons/md";
+import './chatgpt.css';
 import config from './config';
 
-function App() {
+function ChatGpt() {
   const [text, setText] = useState("");
   const [message, setMessage] = useState(null);
   const [previousChats, setPreviousChats] = useState([]);
@@ -132,63 +133,38 @@ function App() {
   const localUniqueTitles = Array.from(
     new Set(localChats.map((prevChat) => prevChat.title).reverse())
   ).filter((title) => !uniqueTitles.includes(title));
-
-  return (
-    <div className="ChatGpt">
+  return(
+  <div className="ChatGpt">
       <div className="container">
-        <section className={`sidebar ${isShowSidebar ? "open" : ""}`}>
+      <section className={`sidebar ${isShowSidebar ? "open" : ""}`}>
           <div className="sidebar-header" onClick={createNewChat} role="button">
             <BiPlus size={20} />
             <button>New Chat</button>
           </div>
           <div className="sidebar-history">
-            {uniqueTitles.length > 0 && previousChats.length !== 0 && (
+            {/* Ongoing chats - populated from backend */}
+            {previousChats.length > 0 && (
               <>
                 <p>Ongoing</p>
                 <ul>
-                  {uniqueTitles?.map((uniqueTitle, idx) => {
-                    const listItems = document.querySelectorAll("li");
-
-                    listItems.forEach((item) => {
-                      if (item.scrollWidth > item.clientWidth) {
-                        item.classList.add("li-overflow-shadow");
-                      }
-                    });
-
-                    return (
-                      <li
-                        key={idx}
-                        onClick={() => backToHistoryPrompt(uniqueTitle)}
-                      >
-                        {uniqueTitle}
-                      </li>
-                    );
-                  })}
+                  {previousChats.map((chat, idx) => (
+                    <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
+                      {chat.title}
+                    </li>
+                  ))}
                 </ul>
               </>
             )}
-            {localUniqueTitles.length > 0 && localChats.length !== 0 && (
+            {/* Example for locally stored chats */}
+            {localChats.length > 0 && (
               <>
                 <p>Previous</p>
                 <ul>
-                  {localUniqueTitles?.map((uniqueTitle, idx) => {
-                    const listItems = document.querySelectorAll("li");
-
-                    listItems.forEach((item) => {
-                      if (item.scrollWidth > item.clientWidth) {
-                        item.classList.add("li-overflow-shadow");
-                      }
-                    });
-
-                    return (
-                      <li
-                        key={idx}
-                        onClick={() => backToHistoryPrompt(uniqueTitle)}
-                      >
-                        {uniqueTitle}
-                      </li>
-                    );
-                  })}
+                  {localChats.map((chat, idx) => (
+                    <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
+                      {chat.title}
+                    </li>
+                  ))}
                 </ul>
               </>
             )}
@@ -290,4 +266,4 @@ function App() {
   );
 }
 
-export default App;
+export default ChatGpt;
