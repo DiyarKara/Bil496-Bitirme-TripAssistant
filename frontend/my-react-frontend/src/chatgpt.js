@@ -92,12 +92,9 @@ function ChatGpt() {
       setIsResponseLoading(false);
     }
   };
-
   useEffect(() => {
-    if (user && user.id) {
-      fetchChatHistory();
-    }
-  }, [fetchChatHistory, user?.id]);
+    fetchChatHistory();
+  }, [fetchChatHistory]);
 
   useLayoutEffect(() => {
     const handleResize = () => {
@@ -114,7 +111,7 @@ function ChatGpt() {
 
   useEffect(() => {
     const storedChats = localStorage.getItem("previousChats");
-    console.log(storedChats);
+
     if (storedChats) {
       setLocalChats(JSON.parse(storedChats));
     }
@@ -150,6 +147,14 @@ function ChatGpt() {
     (prevChat) => prevChat.title === currentTitle
   );
 
+  const uniqueTitles = Array.from(
+    new Set(previousChats.map((prevChat) => prevChat.title).reverse())
+  );
+
+  const localUniqueTitles = Array.from(
+    new Set(localChats.map((prevChat) => prevChat.title).reverse())
+  ).filter((title) => !uniqueTitles.includes(title));
+
 
   return (
     <div className="ChatGpt">
@@ -174,18 +179,6 @@ function ChatGpt() {
               </>
             )}
             {/* Example for locally stored chats */}
-            {localChats.length > 0 && (
-              <>
-                <p>Previous</p>
-                <ul>
-                  {localChats.map((chat, idx) => (
-                    <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
-                      {chat.title}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
           </div>
           <div className="sidebar-info">
             <div className="sidebar-info-upgrade">
