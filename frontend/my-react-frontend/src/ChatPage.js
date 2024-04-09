@@ -108,30 +108,27 @@ function ChatPage() {
       alert("No chat logs to export.");
     }
   };
-  const reverseTransformation = (formattedChats,currentTitle) => {
-    // Use a Map to group messages by their chat session (based on title)
-    const chatSessions = new Map();
+  const reverseTransformation = (formattedChats, currentTitle) => {
+    // Directly prepare the object for the specific session
+    const chatSession = {
+      userId: null,
+      chat_log_id: null,
+      messages: [],
+    };
   
-    formattedChats.filter(chat => chat.title === currentTitle).forEach(({userId, title, content}) => {
-      // Extract the chat session ID from the title
-      const sessionId = title.split(' ')[2]; // Assumes title format is "username's Chat X"
+    // Extract the chat session ID from the title, assuming there's only one currentTitle
+    const sessionId = currentTitle.split(' ')[2]; // Assumes title format is "username's Chat X"
   
-      // If the session already exists in the Map, append the content to its messages
-      if (chatSessions.has(sessionId)) {
-        chatSessions.get(sessionId).messages.push(content);
-      } else {
-        // Otherwise, create a new session entry in the Map
-        chatSessions.set(sessionId, {
-          userId:user.id,
-          chat_log_id: parseInt(sessionId, 10), // Convert session ID to a number
-          messages: [content]
-        });
-      }
+    formattedChats.filter(chat => chat.title === currentTitle).forEach(({userId, content}) => {
+      chatSession.userId = user.id; // Assuming userId is the same for all messages in the session
+      chatSession.chat_log_id = parseInt(sessionId, 10); // Convert session ID to a number
+      chatSession.messages.push(content);
     });
   
-    // Convert the Map values back to an array
-    return chatSessions.values(0);
+    // Since we're now dealing with a single chat session, return the object directly
+    return chatSession;
   };
+  
   
 
   // Use useEffect to fetch chats when the component mounts
