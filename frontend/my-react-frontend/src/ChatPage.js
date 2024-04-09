@@ -30,58 +30,6 @@ function ChatPage() {
     setText("");
     setCurrentTitle(null);
   };
-  const newChat = async () => {
-
-  
-    try {
-      // Replace `URL` with your actual backend endpoint
-      const response = await fetch(`${config.backendURL}/save_chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Include other headers as needed, like authorization tokens
-        },
-        body: JSON.stringify({messages:[],userId:user.id}),
-      });
-  
-      if (!response.ok) throw new Error('Failed to save chat');
-  
-      const responseData = await response.json();
-      console.log('Chat saved successfully:', responseData);
-      // Handle success response
-    } catch (error) {
-      console.error('Error saving chat:', error);
-      // Handle error response
-    }
-  };
-  const saveChat = async (chatMessages,currentTitle) => {
-    // Convert the frontend message format to the backend expected format
-    const convertedMessages = reverseTransformation(chatMessages,currentTitle);
-  
-    try {
-      // Replace `URL` with your actual backend endpoint
-      const response = await fetch(`${config.backendURL}/save_chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Include other headers as needed, like authorization tokens
-        },
-        body: JSON.stringify(convertedMessages),
-      });
-  
-      if (!response.ok) throw new Error('Failed to save chat');
-  
-      const responseData = await response.json();
-      console.log('Chat saved successfully:', responseData);
-      // Handle success response
-    } catch (error) {
-      console.error('Error saving chat:', error);
-      // Handle error response
-    }
-  };
-  
-  
-  
   const fetchChats = useCallback(async () => {
     try {
       // Fetch chats from backend
@@ -106,6 +54,8 @@ function ChatPage() {
       }, []);
       setPreviousChats(prevChats => [...prevChats, ...formattedChats]);
       setLocalChats((prevChats) => [...prevChats, ...formattedChats]);
+      const updatedChats = [...localChats];
+      localStorage.setItem("previousChats", JSON.stringify(updatedChats));
     } catch (error) {
       console.error('Failed to fetch chats:', error);
     }
@@ -132,27 +82,6 @@ function ChatPage() {
       alert("No chat logs to export.");
     }
   };
-  const reverseTransformation = (formattedChats, currentTitle) => {
-    // Directly prepare the object for the specific session
-    const chatSession = {
-      userId: null,
-      chat_log_id: null,
-      messages: [],
-    };
-  
-    // Extract the chat session ID from the title, assuming there's only one currentTitle
-    const sessionId = currentTitle.split(' ')[2]; // Assumes title format is "username's Chat X"
-  
-    formattedChats.filter(chat => chat.title === currentTitle).forEach(({userId, content}) => {
-      chatSession.userId = user.id; // Assuming userId is the same for all messages in the session
-      chatSession.chat_log_id = parseInt(sessionId, 10); // Convert session ID to a number
-      chatSession.messages.push(content);
-    });
-  
-    // Since we're now dealing with a single chat session, return the object directly
-    return chatSession;
-  };
-  
   
 
   // Use useEffect to fetch chats when the component mounts
@@ -224,12 +153,17 @@ function ChatPage() {
     };
   }, []);
 
+  useEffect(() => {
+    const storedChats = localStorage.getItem("previousChats");
 
+    if (storedChats) {
+      setLocalChats(JSON.parse(storedChats));
+    }
+  }, []);
 
   useEffect(() => {
     if (!currentTitle && text && message) {    
       setCurrentTitle(`${user.name}'s Chat ${getUniqueChatTitles(previousChats,localChats).length + 1}`);
-      newChat();
     }
 
     if (currentTitle && text && message) {
@@ -251,8 +185,7 @@ function ChatPage() {
       setLocalChats((prevChats) => [...prevChats, newChat, responseMessage]);
 
       const updatedChats = [...localChats, newChat, responseMessage];
-      saveChat(updatedChats,currentTitle);
-      //localStorage.setItem("previousChats", JSON.stringify(updatedChats));
+      localStorage.setItem("previousChats", JSON.stringify(updatedChats));
     }
   }, [message, currentTitle]);
 
