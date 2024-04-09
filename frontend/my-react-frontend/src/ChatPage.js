@@ -38,7 +38,7 @@ function ChatPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userId: user.id }), // Assuming the backend creates a chat with no initial messages
+        body: JSON.stringify({ messages:[],userId: user.id }), // Assuming the backend creates a chat with no initial messages
       });
   
       if (!response.ok) throw new Error('Failed to create new chat');
