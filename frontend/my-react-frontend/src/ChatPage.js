@@ -1,122 +1,350 @@
-import React, { useState, useEffect, useRef } from 'react';
-import './Chat.css'; // Make sure the CSS path is correct
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useLayoutEffect,
+} from "react";
+import { BiPlus, BiUser, BiSend, BiSolidUserCircle } from "react-icons/bi";
+import { MdOutlineArrowLeft, MdOutlineArrowRight } from "react-icons/md";
+import './css/chatgpt.css';
+import { useAuth } from './AuthContext';
+import config from './config';
 
-const ChatPage = () => {
-    const [inputMessage, setInputMessage] = useState('');
-    const [messages, setMessages] = useState([]);
-    const [savedChats, setSavedChats] = useState([]);
-    const [currentChatId, setCurrentChatId] = useState(null);
-    const chatBoxRef = useRef(null);
-    const [chatLogs, setChatLogs] = useState([]); // To store chat logs fetched from the server
+function ChatPage() {
+  const [text, setText] = useState("");
+  const [previousChats, setPreviousChats] = useState([]);
+  const { user } = useAuth();
+  const [message, setMessage] = useState(null);
+  const [localChats, setLocalChats] = useState([]);
+  const [currentTitle, setCurrentTitle] = useState(null);
+  const [isResponseLoading, setIsResponseLoading] = useState(false);
+  const [errorText, setErrorText] = useState("");
+  const [isShowSidebar, setIsShowSidebar] = useState(false);
+  const scrollToLastItem = useRef(null);
 
-    // Fetch saved chats on component mount
-    useEffect(() => {
-        fetch('/get_chats')
-            .then(response => response.json())
-            .then(data => {
-                setSavedChats(data);
-                // Optionally set a current chat here
-            })
-            .catch(error => console.error('Fetch chats error:', error));
-    }, []);
+  const createNewChat = () => {
+    setMessage(null);
+    setText("");
+    setCurrentTitle(null);
+  };
+  const fetchChats = useCallback(async () => {
+    try {
+      // Fetch chats from backend
+      const queryParams = new URLSearchParams({ userId: user.id }).toString();
+      const response = await fetch(`${config.backendURL}/get_chats?${queryParams}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const chats = await response.json();
+  
+      // Filter chats based on userId
+      const filteredChats = chats.filter(chat => chat.userId === user.id);
+  
+      // Process and set formatted chats
+      const formattedChats = filteredChats.reduce((acc, chat) => {
+        const chatMessages = chat.messages.map((message, index) => ({
+          id: chat.id,
+          title: `Chat ${chat.id}`,
+          role: index % 2 === 0 ? 'user' : 'assistant',
+          content: message,
+        }));
+        return [...acc, ...chatMessages];
+      }, []);
+  
+      setPreviousChats(formattedChats);
+    } catch (error) {
+      console.error('Failed to fetch chats:', error);
+    }
+  }, [user.id]);
 
-    const displayChatLog = (chatLogId) => {
-        // Logic to display the chat log based on the provided chatLogId
-        // This might involve setting the current chat log in your state and fetching the messages for this log
-        console.log(`Displaying chat log with ID: ${chatLogId}`);
-        // For example, you could filter the `chatLogs` state to find the log with `chatLogId` and then set your messages state accordingly
-    };
-    
-    const handleSendMessage = (e) => {
-        e.preventDefault();
-        if (!inputMessage.trim()) return;
-        
-        // Add user message immediately to UI
-        addMessageToChat('user-message', inputMessage);
-        setInputMessage('');
+  const exportChatLogs = () => {
+    // Retrieve chat logs from local storage or state
+    const chatsToExport = [...previousChats, ...localChats]
+      .filter(chat => chat.userId === user.id);
+  
+    if (chatsToExport.length > 0) {
+      // Create a Blob from the chats
+      const blob = new Blob([JSON.stringify(chatsToExport)], { type: 'application/json' });
+      // Create an anchor element and trigger download
+      const href = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = href;
+      link.download = "chat_logs.json"; // or "chat_logs.txt"
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(href);
+    } else {
+      alert("No chat logs to export.");
+    }
+  };
+  
 
-        // Simulate a delay and send the message to the backend
+  // Use useEffect to fetch chats when the component mounts
+  useEffect(() => {
+    fetchChats();
+  }, [fetchChats]); // Empty dependency array means this effect runs only once after the initial render
+
+  // Function to handle click on a chat item
+
+  const backToHistoryPrompt = (uniqueTitle) => {
+    setCurrentTitle(uniqueTitle);
+    setMessage(null);
+    setText("");
+  };
+
+  const toggleSidebar = useCallback(() => {
+    setIsShowSidebar((prev) => !prev);
+  }, []);
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    if (!text) return;
+
+    setIsResponseLoading(true);
+    setErrorText('');
+
+    try {
+      const response = await fetch(`${config.backendURL}/process_message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: text })
+        //body: JSON.stringify(localStorage.getItem("previousChats")),
+      });
+
+      if (!response.ok) throw new Error('Message processing failed');
+
+      const data = await response.json();
+      setErrorText(false);
+      setErrorText("");
+      setMessage(data); // Adapt based on your backend response
         setTimeout(() => {
-            fetch('/process_message', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: inputMessage })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.response) {
-                    addMessageToChat('chatbot-message', data.response);
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        }, 1000);
-    };
+          scrollToLastItem.current?.lastElementChild?.scrollIntoView({
+            behavior: "smooth",
+          });
+        }, 1);
+        setTimeout(() => {
+          setText("");
+        }, 2);
+    } catch (error) {
+      setErrorText(error.toString());
+      console.error('Submit error:', error);
+    } finally {
+      setIsResponseLoading(false);
+    }
+  };
 
-    const addMessageToChat = (className, message) => {
-        const newMessage = { type: className, content: message };
-        setMessages(prevMessages => [...prevMessages, newMessage]);
-        // Ensure chatBox scrolls to bottom
-        if (chatBoxRef.current) {
-            setTimeout(() => {
-                chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
-            }, 0);
+  useLayoutEffect(() => {
+    const handleResize = () => {
+      setIsShowSidebar(window.innerWidth <= 640);
+    };
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    const storedChats = localStorage.getItem("previousChats");
+
+    if (storedChats) {
+      setLocalChats(JSON.parse(storedChats));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!currentTitle && text && message) {    
+      setCurrentTitle(`${user.name}'s Chat ${getUniqueChatTitles(previousChats,localChats).length + 1}`);
+    }
+
+    if (currentTitle && text && message) {
+      const newChat = {
+        userId: user.id,
+        title: currentTitle,
+        role: "user",
+        content: text,
+      };
+
+      const responseMessage = {
+        userId: user.id,
+        title: currentTitle,
+        role: message.role,
+        content: message.content,
+      };
+
+      setPreviousChats((prevChats) => {
+        // Check if the chat log already exists
+        const existingChatIndex = prevChats.findIndex(chat => chat.title === currentTitle);
+      
+        // If the chat log exists, update it; otherwise, append the new chat log
+        if (existingChatIndex !== -1) {
+          console.log("chatlog exist")
+          const updatedChats = [...prevChats];
+          updatedChats[existingChatIndex].content = text; // Update the content
+          return updatedChats;
+        } else {
+          console.log("chat log doesnt exist")
+          // Append the new chat log
+          return [...prevChats, newChat, responseMessage];
         }
-    };
+      });
+      setLocalChats((prevChats) => [...prevChats, newChat, responseMessage]);
 
-    const handleSaveChat = () => {
-        const payload = {
-            chat_log_id: currentChatId,
-            messages: messages.map(msg => msg.content) // Assuming backend expects an array of message strings
-        };
+      const updatedChats = [...localChats, newChat, responseMessage];
+      localStorage.setItem("previousChats", JSON.stringify(updatedChats));
+    }
+  }, [message, currentTitle]);
 
-        fetch('/save_chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.chat_log_id) {
-                console.log('Chat saved with ID:', data.chat_log_id);
-                // Update saved chats state if necessary
-            } else {
-                console.error('Error saving chat:', data.error);
-            }
-        })
-        .catch(error => console.error('Failed to save chat:', error));
-    };
+  const currentChat = (localChats || previousChats).filter(
+    (prevChat) => prevChat.title === currentTitle
+  );
 
-    // Render chat interface, message input form, and saved chats list
-    return (
-        <div>
-            <header className="navigation-bar">
-                {/* Conditionally render Logout based on user session state */}
-                <div id="logout-button" onClick={() => window.location.href = '/logout'}>Logout</div>
-            </header>
-            <div className="chat-interface">
-                <aside className="chat-sidebar">
-                    {/* New Chat Button and Chat Logs Here */}
-                    <button id="newChatButton">New Chat</button>
-                    <div className="chat-log-list">
-                        {/* Chat logs listing */}
-                    </div>
-                </aside>
-                <div className="chat-container">
-                    <div className="chat-box" ref={chatBoxRef}>
-                        {/* Messages displayed here */}
-                    </div>
-                    {/* Message input form */}
-                    <form id="chatForm" onSubmit={handleSendMessage}>
-                        <input type="text" id="chatInput" placeholder="Type a message..." autoComplete="off"
-                            value={inputMessage} onChange={(e) => setInputMessage(e.target.value)} />
-                        <button type="submit">Send</button>
-                    </form>
-                </div>
+  const uniqueTitles = Array.from(
+    new Set(previousChats.map((prevChat) => prevChat.title).reverse())
+  );
+
+  const localUniqueTitles = Array.from(
+    new Set(localChats.map((prevChat) => prevChat.title).reverse())
+  ).filter((title) => !uniqueTitles.includes(title));
+  function getUniqueChatTitles(previousChats, localChats) {
+    const allChats = [...previousChats, ...localChats];
+    const uniqueTitles = [];
+    const seenTitles = new Set();
+  
+    allChats.filter(chat => chat.userId === user.id).forEach(chat => {
+      if (!seenTitles.has(chat.title)) {
+        uniqueTitles.push(chat);
+        seenTitles.add(chat.title);
+      }
+    });
+  
+    return uniqueTitles;
+  }
+  
+  return(
+  <div className="ChatGpt">
+      <div className="container">
+      <section className={`sidebar ${isShowSidebar ? "open" : ""}`}>
+          <div className="sidebar-header" onClick={createNewChat} role="button">
+            <BiPlus size={20} />
+            <button>New Chat</button>
+          </div>
+          <div className="sidebar-history">
+            {/* Ongoing chats - populated from backend */}
+            
+            {/* Example for locally stored chats */}
+            <p>Chats</p>
+    <ul>
+      {getUniqueChatTitles(previousChats, localChats).filter(chat => chat.userId === user.id)
+        .map((chat, idx) => (
+          <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
+            {chat.title}
+          </li>
+        ))}
+    </ul>
+          </div>
+          <div className="sidebar-info">
+            <div className="sidebar-info-upgrade">
+              <BiUser size={20} />
+              <p>Upgrade plan</p>
             </div>
-            <button id="deleteChatButton" className="delete-chat-btn">Delete Chat</button> {/* Implement delete functionality */}
-            <div id="back-button" onClick={() => window.location.href = '/dashboard'}>Back to Dashboard</div>
-        </div>
-    );
-};
+            <div className="sidebar-info-user">
+              <BiSolidUserCircle size={20} />
+              <p>User</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="main">
+          {!currentTitle && (
+            <div className="empty-chat-container">
+              <img
+                src="images/chatgpt-logo.svg"
+                width={45}
+                height={45}
+                alt="ChatGPT"
+              />
+              <h1>Chat GPT Clone</h1>
+              <h3>How can I help you today?</h3>
+            </div>
+          )}
+
+          {isShowSidebar ? (
+            <MdOutlineArrowRight
+              className="burger"
+              size={28.8}
+              onClick={toggleSidebar}
+            />
+          ) : (
+            <MdOutlineArrowLeft
+              className="burger"
+              size={28.8}
+              onClick={toggleSidebar}
+            />
+          )}
+          <div className="main-header">
+            <ul>
+              {currentChat?.map((chatMsg, idx) => {
+                const isUser = chatMsg.role === "user";
+
+                return (
+                  <li key={idx} ref={scrollToLastItem}>
+                    {isUser ? (
+                      <div>
+                        <BiSolidUserCircle size={28.8} />
+                      </div>
+                    ) : (
+                      <img src="images/chatgpt-logo.svg" alt="ChatGPT" />
+                    )}
+                    {isUser ? (
+                      <div>
+                        <p className="role-title">You</p>
+                        <p>{chatMsg.content}</p>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="role-title">ChatGPT</p>
+                        <p>{chatMsg.content}</p>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+          <div className="main-bottom">
+            {errorText && <p className="errorText">{errorText}</p>}
+            <form className="form-container" onSubmit={submitHandler}>
+              <input
+                type="text"
+                placeholder="Send a message."
+                spellCheck="false"
+                value={isResponseLoading ? "Processing..." : text}
+                onChange={(e) => setText(e.target.value)}
+                readOnly={isResponseLoading}
+              />
+              {!isResponseLoading && (
+                <button type="submit">
+                  <BiSend size={20} />
+                </button>
+              )}
+            </form>
+            <p>
+              ChatGPT can make mistakes. Consider checking important
+              information.
+            </p>
+            <button onClick={exportChatLogs}>Export Chat</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
 
 export default ChatPage;

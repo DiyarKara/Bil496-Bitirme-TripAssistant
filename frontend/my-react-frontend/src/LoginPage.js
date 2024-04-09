@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import './Style.css'; // Adjust the path according to your project structure
+import './css/Style.css'; // Adjust the path according to your project structure
 import config from './config';
 import { useAuth } from './AuthContext';
 

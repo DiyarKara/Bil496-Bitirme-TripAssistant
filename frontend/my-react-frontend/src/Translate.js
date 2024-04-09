@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './translate.css'; // Make sure to adapt your CSS for React
+import './css/translate.css'; // Make sure to adapt your CSS for React
 
 function Translate() {
   const [sourceText, setSourceText] = useState('');

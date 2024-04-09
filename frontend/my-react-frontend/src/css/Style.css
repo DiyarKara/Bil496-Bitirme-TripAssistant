@@ -5,7 +5,7 @@ body, html {
     width: 100%;
 }
 body{
-    background-image: url('arkaplan.jpg');
+    background-image: url('../images/arkaplan.jpg');
 }
 
 .page-container {
