@@ -52,8 +52,7 @@ function ChatPage() {
         }));
         return [...acc, ...chatMessages];
       }, []);
-  
-      setBackendChats(formattedChats);
+      localStorage.setItem("previousChats", JSON.stringify(formattedChats));
     } catch (error) {
       console.error('Failed to fetch chats:', error);
     }
@@ -152,7 +151,7 @@ function ChatPage() {
   }, []);
 
   useEffect(() => {
-    const storedChats = backendChats;
+    const storedChats = localStorage.getItem("previousChats");
 
     if (storedChats) {
       setLocalChats(JSON.parse(storedChats));
