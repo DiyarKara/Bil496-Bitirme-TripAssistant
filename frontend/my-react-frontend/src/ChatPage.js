@@ -231,6 +231,8 @@ function ChatPage() {
   useEffect(() => {
     if (!currentTitle && text && message) {    
       newChat();
+      const newTitle = `${user.name}'s Chat ${getUniqueChatTitles(previousChats,localChats).length + 1}`;
+      setCurrentTitle(newTitle);
     }
 
     if (currentTitle && text && message) {
