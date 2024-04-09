@@ -1,37 +1,105 @@
-.translate-container {
-    max-width: 600px;
-    margin: auto;
-    padding: 20px;
+ *{
+    font-family: 'roboto', sans-serif;
 }
 
-textarea {
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 10px;
+
+.translate-container .null{
+    background: transparent;
+    border-style: none;
+    outline: none;
+    resize: none;
     height: 100px;
 }
 
-select {
-    width: 49%;
-    margin-right: 2%;
-    padding: 10px;
-    margin-bottom: 10px;
+.select-container-top{
+    height: 50px;
+
+    display: flex;
+    list-style: none;
+    justify-content:space-between;
+    align-items:center;
+    padding: 0 50px;
+}
+.translate-container1 select[id = "sourceLanguage"]{
+    outline: none;
+    border-style: none;
+    font-size: 15px;
+    font-weight: 500;
+    color: #606060;
+}
+.translate-container1 select[id = "targetLanguage"]{
+    outline: none;
+    border-style: none;
+    font-size: 15px;
+    font-weight: 500;
+    color: #606060;
 }
 
-select:last-of-type {
-    margin-right: 0;
+.translate-container1 button {
+
 }
 
-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-bottom: 10px;
+.translate-container1 {
+    height: 600px;
+    width: 1250px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 20px rgba(0,0,0,.3);
+    border-radius: 5px;
+    margin-left: 30vh;
 }
+.text-container-top{
+    display: flex;
+    justify-content: space-between;
+
+}
+.text-container textarea{
+    background: transparent;
+    border-style: none;
+    outline: none;
+    resize: none;
+    width: 62.5vh;
+    font-size: 25px;
+}
+.text-container textarea[id="sourceText"]{
+    height: 332px;
+    background-color: #f7f7f7;
+    margin-left: 50px;
+}
+.text-container textarea[id="translatedText"]{
+    height: 332px;
+    background-color: #f3f3f3;;
+    margin-right: 50px;
+}
+/* 
+.translate-container1{
+    padding: 0;
+    box-sizing: border-box;
+    display:flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items:center;
+} */
+/*
+.text-container textarea{
+    background: transparent;
+    border-style: none;
+    outline: none;
+    resize: none;
+}
+.text-container textarea[id="sourceText"]{
+    margin-left: 5vh;
+    margin-top: 2vh;
+    width: 45vh;
+    height: 332px;
+    background-color: #f5f5f5;
+}
+.text-container textarea[id="translatedText"]{
+    width: 45vh;
+    height: 332px;
+    margin-left: 35vh;
+    background-color: #f3f3f3;;
+}
+*/
 
 button:hover {
     background-color: #45a049;

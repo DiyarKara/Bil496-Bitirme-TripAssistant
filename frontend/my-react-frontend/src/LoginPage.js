@@ -56,6 +56,7 @@ const LoginPage = () => {
         navigate('/'); // Navigates the user to the previous page
     };
     return (
+        <div className='page'>
         <div className="page-container">
             <header>
                 <nav>
@@ -63,6 +64,7 @@ const LoginPage = () => {
                     <Link to="/about-us" className="nav-link">About Us</Link>
                 </nav>
             </header>
+            <textarea id="null" disabled/>
             <main className="form-container">
                 <form method="post" id="loginForm" onSubmit={handleSubmit}>
                     <h2>Login</h2> {/* Form title */}
@@ -81,6 +83,7 @@ const LoginPage = () => {
                     )}
                 </form>
             </main>
+        </div>
         </div>
     );
 
