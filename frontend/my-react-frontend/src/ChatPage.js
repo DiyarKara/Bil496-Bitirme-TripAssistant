@@ -30,6 +30,34 @@ function ChatPage() {
     setText("");
     setCurrentTitle(null);
   };
+  const saveChat = async (chatMessages) => {
+    // Convert the frontend message format to the backend expected format
+    const convertedMessages = reverseTransformation(chatMessages);
+  
+    try {
+      // Replace `URL` with your actual backend endpoint
+      const response = await fetch(`YOUR_BACKEND_ENDPOINT/save_chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Include other headers as needed, like authorization tokens
+        },
+        body: JSON.stringify(convertedMessages),
+      });
+  
+      if (!response.ok) throw new Error('Failed to save chat');
+  
+      const responseData = await response.json();
+      console.log('Chat saved successfully:', responseData);
+      // Handle success response
+    } catch (error) {
+      console.error('Error saving chat:', error);
+      // Handle error response
+    }
+  };
+  
+  
+  
   const fetchChats = useCallback(async () => {
     try {
       // Fetch chats from backend
@@ -79,6 +107,29 @@ function ChatPage() {
     } else {
       alert("No chat logs to export.");
     }
+  };
+  const reverseTransformation = (formattedChats) => {
+    // Use a Map to group messages by their chat session (based on title)
+    const chatSessions = new Map();
+  
+    formattedChats.forEach(({userId, title, content}) => {
+      // Extract the chat session ID from the title
+      const sessionId = title.split(' ')[2]; // Assumes title format is "username's Chat X"
+  
+      // If the session already exists in the Map, append the content to its messages
+      if (chatSessions.has(sessionId)) {
+        chatSessions.get(sessionId).messages.push(content);
+      } else {
+        // Otherwise, create a new session entry in the Map
+        chatSessions.set(sessionId, {
+          id: parseInt(sessionId, 10), // Convert session ID to a number
+          messages: [content]
+        });
+      }
+    });
+  
+    // Convert the Map values back to an array
+    return Array.from(chatSessions.values());
   };
   
 
@@ -183,7 +234,8 @@ function ChatPage() {
       setLocalChats((prevChats) => [...prevChats, newChat, responseMessage]);
 
       const updatedChats = [...localChats, newChat, responseMessage];
-      localStorage.setItem("previousChats", JSON.stringify(updatedChats));
+      saveChat(updatedChats);
+      //localStorage.setItem("previousChats", JSON.stringify(updatedChats));
     }
   }, [message, currentTitle]);
 
