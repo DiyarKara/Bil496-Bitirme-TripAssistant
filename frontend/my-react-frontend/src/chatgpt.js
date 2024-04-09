@@ -241,7 +241,7 @@ function ChatGpt() {
             {/* Example for locally stored chats */}
             <p>Chats</p>
     <ul>
-      {getUniqueChatTitles(previousChats, localChats)
+      {getUniqueChatTitles(previousChats, localChats).filter(chat => chat.userId == user.id)
         .map((chat, idx) => (
           <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
             {chat.title}
