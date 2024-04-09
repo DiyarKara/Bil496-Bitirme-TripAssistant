@@ -7,14 +7,14 @@ import {
 } from "react";
 import { BiPlus, BiUser, BiSend, BiSolidUserCircle } from "react-icons/bi";
 import { MdOutlineArrowLeft, MdOutlineArrowRight } from "react-icons/md";
-import './css/chatgpt.css';
+import './css/Chat.css';
 import { useAuth } from './AuthContext';
 import config from './config';
 
 function ChatPage() {
   const [text, setText] = useState("");
   const [previousChats, setPreviousChats] = useState([]);
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [message, setMessage] = useState(null);
   const [localChats, setLocalChats] = useState([]);
   const [currentTitle, setCurrentTitle] = useState(null);
@@ -228,7 +228,7 @@ function ChatPage() {
   }
   
   return(
-  <div className="ChatGpt">
+  <div className="ChatPage">
       <div className="container">
       <section className={`sidebar ${isShowSidebar ? "open" : ""}`}>
           <div className="sidebar-header" onClick={createNewChat} role="button">
@@ -250,13 +250,13 @@ function ChatPage() {
     </ul>
           </div>
           <div className="sidebar-info">
-            <div className="sidebar-info-upgrade">
+            <div className="sidebar-info-upgrade" onClick={logout}>
               <BiUser size={20} />
               <p>Logout</p>
             </div>
             <div className="sidebar-info-user">
               <BiSolidUserCircle size={20} />
-              <p>Welcome ${user.name}</p>
+              <p>Welcome {user.name}</p>
             </div>
           </div>
         </section>
@@ -270,7 +270,7 @@ function ChatPage() {
                 height={45}
                 alt="ChatGPT"
               />
-              <h1>${config.projectName}</h1>
+              <h1>{config.projectName}</h1>
               <h3>How can I help you today?</h3>
             </div>
           )}
@@ -309,7 +309,7 @@ function ChatPage() {
                       </div>
                     ) : (
                       <div>
-                        <p className="role-title">${config.projectName}</p>
+                        <p className="role-title">{config.projectName}</p>
                         <p>{chatMsg.content}</p>
                       </div>
                     )}
@@ -336,7 +336,7 @@ function ChatPage() {
               )}
             </form>
             <p>
-              ${config.projectName} can make mistakes. Consider checking important
+              {config.projectName} can make mistakes. Consider checking important
               information.
             </p>
             <button onClick={exportChatLogs}>Export Chat</button>

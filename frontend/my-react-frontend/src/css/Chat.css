@@ -1,195 +1,293 @@
-body, html {
-    height: 100%;
+.ChatPage * {
     margin: 0;
-}
-
-.chat-interface {
-    display: flex;
-    height: 100vh; /* Full viewport height */
-}
-
-.chat-sidebar {
-    width: 250px; /* Adjust according to your preference */
-    position: fixed;
+    padding: 0;
+    box-sizing: border-box;
+    font-family:
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      Oxygen,
+      Ubuntu,
+      Cantarell,
+      "Open Sans",
+      "Helvetica Neue",
+      sans-serif;
+    color: #ececf1;
+  }
+  
+  .ChatPage ul {
+    list-style-type: none;
+  }
+  
+  .ChatPage button {
+    border: none;
+    background-color: unset;
+    cursor: pointer;
+  }
+  
+  .ChatPage .container {
+    height: 100vh;
+    width: 100vw; /* Adjust width to fill viewport */
+    display: grid;
+    grid-template-columns: 0fr 1fr; /* You might want to adjust this */
+    background-color: #343541;
+  }
+  
+  .ChatPage .burger {
+    position: absolute;
+    top: 50%;
     left: 0;
-    top: 60px; /* Assuming your navigation bar is 60px in height */
-    bottom: 0;
-    overflow-y: auto;
-    background-color: #e9e9e9; /* Light grey background */
-    border-right: 1px solid #ddd; /* Separator */
-    padding: 20px 0;
-}
-
-.chat-container {
-    margin-left: 250px; /* Make space for the fixed chat-sidebar */
-    flex-grow: 1; /* Allows the chat container to use available space */
+    transform: translate(-25%, -50%);
+    fill: #ececf1;
+    cursor: pointer;
+  }
+  
+  .ChatPage .sidebar {
+    width: 16rem;
+    padding: 1rem;
+    gap: 1rem;
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Center the chat box vertically */
-    align-items: center; /* Center the chat box horizontally */
-    padding: 20px;
-}
-
-.chat-box {
-    width: 60%; /* Making chat box larger */
-    max-width: 800px; /* Maximum width */
-    height: 80vh; /* Adjust based on your preference */
-    overflow-y: auto;
-    background-color: #fafafa;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-}
-
-/* Other styles can remain unchanged. Adjust as necessary to fit the new layout */
-
-
-/* Adjustments for chat sidebar */
-.chat-sidebar {
-    width: 250px; /* Adjust the width of the sidebar */
-    overflow-y: auto; /* Enable scrolling for long chat lists */
-    border-right: 1px solid #ddd;
-}
-
-/* Navigation bar adjustments */
-.navigation-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-}
-
-/* Other CSS rules remain unchanged */
-
-/* Ensure the footer (if any) is properly placed */
-
-
-.navigation-bar a:hover {
-    background-color: #0056b3;
-}
-.chat-interface {
-    display: flex;
-    width: 100%;
-    height: calc(100vh - 60px); /* Assuming header is 60px and you want chat interface to fill the rest of the height */
-}
-
-.chat-log-list {
-    width: 50%; /* Increase this to make log items wider */
-    height: 560px; /* Match the height with the chat container */
-    overflow-y: auto;
-    border-right: 1px solid #ddd;
-    background-color: #e9e9e9;
-    padding: 20px 50px; /* Adjust padding to center the log items */
-}
-/*.chat-interface {
-    display: flex;
-    width: 100%;
-}
-
-.chat-log-list {
-    margin-top: 60px;
-    width: 20%;
-    height: 440px; 
-    overflow-y: auto;
-    border-right: 1px solid #ddd;
-    background-color: #e9e9e9;
-    padding: 50px;
-}*/
-
-/* Add styles for the save button */
-#saveChat {
-    margin-left: 10px;
-    /* Rest of the styles similar to the send button */
-}
-
-#newChatButton {
-    width: 100%;
-    padding: 10px 0;
-    margin-bottom: 20px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#newChatButton:hover {
-    background-color: #0056b3;
-}
-
-/*.log-item {
-    padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
-    background-color: #91beee;
-}*/
-.log-item {
-    padding: 10px 15px; /* Adjust padding to fit the text */
-    margin-bottom: 5px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
-    background-color: #91beee;
-    min-height: 40px; /* Decrease height */
-    width: 100%; /* Ensure the width is 100% of the parent element */
-    box-sizing: border-box; /* Make sure paddings and borders are included in the width */
     align-items: center;
+    justify-content: space-between;
+    background-color: rgb(32, 33, 35, 1);
+    overflow: auto;
+    transition: all 0.3s ease;
+  }
+  
+  .ChatPage .sidebar.open {
+    width: 0;
+    padding: 0;
+    opacity: 0;
+    box-shadow: 0px 0px 14px #ececf1;
+    filter: blur(14px);
+  }
+  
+  .ChatPage .sidebar-header {
+    width: 100%;
     display: flex;
-    justify-content: flex-start; /* Align text to start */
-    white-space: nowrap; /* Prevent text from wrapping */
-}
-
-
-.log-item:hover {
-    background-color: #007bff;
-    color: white;
-}
-
-
-#logout-button {
-    position: fixed;
-    top: 30px;
-    right: 10px; 
-    padding: 10px;
-    background-color: #f44336;
-    color: white; 
-    border: none;
-    border-radius: 5px;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1rem;
+    border-radius: 0.3rem;
+    border: 0.05rem solid rgba(255, 255, 255, 0.5);
     cursor: pointer;
-}
-
-#logout-button:hover {
-    background-color: #d32f2f; 
-}
-
-#back-button {
+  }
+  
+  .ChatPage .sidebar-header:hover {
+    background-color: #2b2c2f;
+  }
+  
+  .ChatPage .sidebar-history {
+    width: 100%;
+    height: 100vh;
+    overflow: auto;
+  }
+  
+  .ChatPage .sidebar-history p {
+    position: sticky;
+    top: 0;
+    background-color: rgb(32, 33, 35);
+    padding: 0.4rem;
+    color: #8e8fa1;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 1;
+  }
+  
+  .ChatPage .sidebar li {
+    position: relative;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0.5rem;
+    white-space: nowrap;
+  }
+  
+  .ChatPage .sidebar .li-overflow-shadow:not(:hover)::after {
+    content: "‎";
     position: absolute;
-    left: 10px;
-    bottom: 10px;
-    z-index: 5;
-    background-color: #4CAF50; 
-    color: white;
-    padding: 10px 20px;
-    border: none; 
-    border-radius: 5px;
-    font-size: 16px; 
-    cursor: pointer; 
+    bottom: 0.5rem;
+    right: -5px;
+    padding: 0 5px;
+    left: calc(100% - 50px);
+    border-radius: 0.3rem;
+    background: linear-gradient(to right,
+        rgba(0, 0, 0, 0),
+        #202123 100%,
+        rgba(0, 0, 0, 0));
+    pointer-events: none;
+    z-index: 1;
   }
-
-  #back-button:hover {
-    background-color: #45a049; 
+  
+  .ChatPage .sidebar-info {
+    width: 100%;
+    padding-top: 1rem;
+    border-top: 0.05rem solid rgba(255, 255, 255, 0.5);
   }
-
-  .delete-chat-btn {
-    position: fixed;
-    right: 20px;
-    top: 50%;
-}
-
-.selected-chat-log {
-    background-color: #bada55;
-    color: #fff;
-}
+  
+  .ChatPage .sidebar-info-upgrade,
+  .ChatPage .sidebar-info-user {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+  
+  .ChatPage .sidebar li:hover,
+  .ChatPage .sidebar-info-upgrade:hover,
+  .ChatPage .sidebar-info-user:hover {
+    background-color: #343541;
+    border-radius: 0.3rem;
+    cursor: pointer;
+  }
+  
+  .ChatPage .sidebar-info-upgrade:hover,
+  .ChatPage .sidebar-info-user:hover {
+    cursor: not-allowed;
+  }
+  
+  .ChatPage .main {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .ChatPage .main h1 {
+    font-size: 2rem;
+  }
+  
+  .ChatPage .main-header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    overflow: auto;
+  }
+  
+  .ChatPage .main-header li {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background-color: rgb(68, 70, 85);
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 0.3rem;
+  }
+  
+  .ChatPage .main-header li:nth-child(odd) {
+    background-color: unset;
+  }
+  
+  .ChatPage .main-header li:nth-child(even) {
+    background-color: #444655;
+  }
+  
+  .ChatPage .main-header img:not(:nth-child(even)) {
+    display: block;
+    border-radius: 0.3rem;
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+  
+.ChatPage .role-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .ChatPage .main-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .ChatPage .main-bottom p:first-child {
+    padding-top: 0.5rem;
+  }
+  
+  .ChatPage .main-bottom p {
+    font-size: 0.8rem;
+    text-align: center;
+    color: #c3c3d1;
+  }
+  
+  .ChatPage .empty-chat-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .ChatPage .empty-chat-container h3 {
+    font-weight: 500;
+  }
+  
+  .ChatPage .errorText {
+    margin: 0 auto;
+  }
+  
+  .ChatPage .form-container {
+    width: 50rem;
+    padding: 0.3rem 1.6rem;
+    margin: 0 auto;
+    border-radius: 0.3rem;
+    display: flex;
+    align-items: center;
+    background-color: #404150;
+    box-shadow:
+      rgb(0, 0, 0, 0.05) 0 3.3rem 3.4rem,
+      rgb(0, 0, 0, 0.05) 0 -0.7rem 1.8rem,
+      rgb(0, 0, 0, 0.05) 0 0.2rem 0.3rem,
+      rgb(0, 0, 0, 0.05) 0 0.7rem 0.2rem,
+      rgb(0, 0, 0, 0.05) 0 0.2rem 0.3rem;
+  }
+  
+  .ChatPage .form-container input {
+    width: 100%;
+    height: 3rem;
+    font-size: 1rem;
+    padding-right: 1rem;
+    background-color: #404150;
+    outline: none;
+    border: none;
+  }
+  
+  .ChatPage .form-container input::placeholder {
+    color: #8e8fa1;
+  }
+  
+  .ChatPage .form-container svg {
+    fill: #8e8fa1;
+    transform: rotate(-45deg);
+  }
+  
+  .ChatPage .form-container svg:hover {
+    fill: #ececf1;
+  }
+  
+  @media screen and (min-width: 1280px) {
+    .ChatPage .main-header li {
+      margin: 1rem auto;
+      width: 50rem;
+    }
+  }
+  
+  @media screen and (max-width: 1080px) {
+    .ChatPage .form-container {
+      width: auto;
+    }
+  }
+  
+  @media screen and (max-width: 640px) {
+    .ChatPage .main-header li {
+      gap: 1rem;
+    }
+  }
