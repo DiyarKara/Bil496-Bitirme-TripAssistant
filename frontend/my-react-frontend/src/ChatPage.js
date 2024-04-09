@@ -122,7 +122,7 @@ function ChatPage() {
       } else {
         // Otherwise, create a new session entry in the Map
         chatSessions.set(sessionId, {
-          userId:user.id,
+          user_id:user.id,
           chat_log_id: parseInt(sessionId, 10), // Convert session ID to a number
           messages: [content]
         });
