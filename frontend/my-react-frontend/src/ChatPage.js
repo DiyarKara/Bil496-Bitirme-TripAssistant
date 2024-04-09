@@ -144,9 +144,9 @@ function ChatPage() {
     // Extract the chat session ID from the title, assuming there's only one currentTitle
     const sessionId = currentTitle.split(' ')[2]; // Assumes title format is "username's Chat X"
   
-    formattedChats.filter(chat => chat.title === currentTitle).forEach(({userId, content}) => {
+    formattedChats.filter(chat => chat.title === currentTitle).forEach(({userId, id,content}) => {
       chatSession.userId = user.id; // Assuming userId is the same for all messages in the session
-      chatSession.chat_log_id = parseInt(chat.id, 10); // Convert session ID to a number
+      chatSession.chat_log_id = parseInt(id, 10); // Convert session ID to a number
       chatSession.messages.push(content);
     });
   
@@ -230,7 +230,7 @@ function ChatPage() {
   useEffect(() => {
     if (!currentTitle && text && message) {    
       newChat();
-      const newTitle = `${user.name}'s Chat ${chat_log_id}`; // Adjust title format as needed
+      const newTitle = `${user.name}'s Chat ${getUniqueChatTitles(previousChats,localChats).length + 1}`; // Adjust title format as needed
       setCurrentTitle(newTitle); // Set the current title to the new chat
     }
 
