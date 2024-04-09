@@ -29,31 +29,56 @@ function ChatGpt() {
     setCurrentTitle(null);
   };
   const fetchChats = useCallback(async () => {
-    const queryParams = new URLSearchParams({ userId: user.id }).toString();
     try {
+      // Fetch chats from backend
+      const queryParams = new URLSearchParams({ userId: user.id }).toString();
       const response = await fetch(`${config.backendURL}/get_chats?${queryParams}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       const chats = await response.json();
-      
-      // Process each chat to format it for the frontend
-      const formattedChats = chats.reduce((acc, chat) => {
-        // Process each message in the chat
+  
+      // Filter chats based on userId
+      const filteredChats = chats.filter(chat => chat.userId === user.id);
+  
+      // Process and set formatted chats
+      const formattedChats = filteredChats.reduce((acc, chat) => {
         const chatMessages = chat.messages.map((message, index) => ({
-          id: chat.id, // Assuming you want to keep track of the chat ID for each message
+          id: chat.id,
           title: `Chat ${chat.id}`,
-          role: index % 2 === 0 ? 'user' : 'assistant', // Even index for user, odd for system
+          role: index % 2 === 0 ? 'user' : 'assistant',
           content: message,
         }));
-        return [...acc, ...chatMessages]; // Append processed messages to accumulator
+        return [...acc, ...chatMessages];
       }, []);
   
       setPreviousChats(formattedChats);
     } catch (error) {
       console.error('Failed to fetch chats:', error);
     }
-  }, [user?.id]);
+  }, [user.id]);
+
+  const exportChatLogs = () => {
+    // Retrieve chat logs from local storage or state
+    const chatsToExport = [...previousChats, ...localChats]
+      .filter(chat => chat.userId === user.id);
+  
+    if (chatsToExport.length > 0) {
+      // Create a Blob from the chats
+      const blob = new Blob([JSON.stringify(chatsToExport)], { type: 'application/json' });
+      // Create an anchor element and trigger download
+      const href = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = href;
+      link.download = "chat_logs.json"; // or "chat_logs.txt"
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(href);
+    } else {
+      alert("No chat logs to export.");
+    }
+  };
   
 
   // Use useEffect to fetch chats when the component mounts
@@ -140,18 +165,35 @@ function ChatGpt() {
 
     if (currentTitle && text && message) {
       const newChat = {
+        userId: user.id,
         title: currentTitle,
         role: "user",
         content: text,
       };
 
       const responseMessage = {
+        userId: user.id,
         title: currentTitle,
         role: message.role,
         content: message.content,
       };
 
-      setPreviousChats((prevChats) => [...prevChats, newChat, responseMessage]);
+      setPreviousChats((prevChats) => {
+        // Check if the chat log already exists
+        const existingChatIndex = prevChats.findIndex(chat => chat.title === currentTitle);
+      
+        // If the chat log exists, update it; otherwise, append the new chat log
+        if (existingChatIndex !== -1) {
+          console.log("chatlog exist")
+          const updatedChats = [...prevChats];
+          updatedChats[existingChatIndex].content = text; // Update the content
+          return updatedChats;
+        } else {
+          console.log("chat log doesnt exist")
+          // Append the new chat log
+          return [...prevChats, newChat, responseMessage];
+        }
+      });
       setLocalChats((prevChats) => [...prevChats, newChat, responseMessage]);
 
       const updatedChats = [...localChats, newChat, responseMessage];
@@ -184,12 +226,14 @@ function ChatGpt() {
               <>
                 <p>Ongoing</p>
                 <ul>
-                  {previousChats.map((chat, idx) => (
-                    <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
-                      {chat.title}
-                    </li>
-                  ))}
-                </ul>
+        {previousChats
+          .filter(chat => chat.userId === user.id) // Filter chat logs based on user ID
+          .map((chat, idx) => (
+            <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
+              {chat.title}
+            </li>
+          ))}
+      </ul>
               </>
             )}
             {/* Example for locally stored chats */}
@@ -197,12 +241,14 @@ function ChatGpt() {
               <>
                 <p>Previous</p>
                 <ul>
-                  {localChats.map((chat, idx) => (
-                    <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
-                      {chat.title}
-                    </li>
-                  ))}
-                </ul>
+        {localChats
+          .filter(chat => chat.userId === user.id) // Filter chat logs based on user ID
+          .map((chat, idx) => (
+            <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
+              {chat.title}
+            </li>
+          ))}
+      </ul>
               </>
             )}
           </div>
@@ -296,6 +342,7 @@ function ChatGpt() {
               ChatGPT can make mistakes. Consider checking important
               information.
             </p>
+            <button onClick={exportChatLogs}>Export Chat</button>
           </div>
         </section>
       </div>
