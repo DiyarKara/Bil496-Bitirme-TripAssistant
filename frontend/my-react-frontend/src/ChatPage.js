@@ -10,7 +10,7 @@ import { MdOutlineArrowLeft, MdOutlineArrowRight } from "react-icons/md";
 import './css/Chat.css';
 import { useAuth } from './AuthContext';
 import config from './config';
-import './images/logo.svg';
+import logo from './images/logo.svg';
 
 function ChatPage() {
   const [text, setText] = useState("");
@@ -266,10 +266,10 @@ function ChatPage() {
           {!currentTitle && (
             <div className="empty-chat-container">
               <img
-                src="./images/logo.svg"
+                src={logo}
                 width={45}
                 height={45}
-                alt="ChatGPT"
+                alt={config.projectName}
               />
               <h1>{config.projectName}</h1>
               <h3>How can I help you today?</h3>
@@ -301,7 +301,7 @@ function ChatPage() {
                         <BiSolidUserCircle size={28.8} />
                       </div>
                     ) : (
-                      <img src="./images/logo.svg" alt="ChatGPT" />
+                      <img src={logo} alt={config.projectName} />
                     )}
                     {isUser ? (
                       <div>
@@ -337,8 +337,7 @@ function ChatPage() {
               )}
             </form>
             <p>
-              {config.projectName} can make mistakes. Consider checking important
-              information.
+              Have fun with {config.projectName}.
             </p>
             <button onClick={exportChatLogs}>Export Chat</button>
           </div>
