@@ -122,7 +122,7 @@ function ChatPage() {
       } else {
         // Otherwise, create a new session entry in the Map
         chatSessions.set(sessionId, {
-          user_id:user.id,
+          userId:user.id,
           chat_log_id: parseInt(sessionId, 10), // Convert session ID to a number
           messages: [content]
         });
@@ -130,7 +130,7 @@ function ChatPage() {
     });
   
     // Convert the Map values back to an array
-    return Array.from(chatSessions.values());
+    return chatSessions.values(0);
   };
   
 
