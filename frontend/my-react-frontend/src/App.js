@@ -38,8 +38,14 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/home" element={<HomePage />} />
+<<<<<<< Updated upstream
         <Route path="/page1" element={<Page1 />} />
         <Route path="/chat" element={<ChatGpt />} />
+=======
+        <Route path="/translate" element={<Translate />} />
+        <Route path="/chat" element={<ChatGpt />} />
+        <Route path="/test" element={<SidebarHistory />} />
+>>>>>>> Stashed changes
         <Route path="/map" element={<MapPage />} />
         {/* Add more routes and wrap them with ProtectedRoute as needed for protection */}
       </Routes>

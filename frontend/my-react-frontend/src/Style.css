@@ -3,21 +3,19 @@ body, html {
     padding: 0;
     height: 100%;
     width: 100%;
+    justify-content: center;
+    align-items: center;
 }
-body{
+
+.page{
     background-image: url('arkaplan.jpg');
+    height: 1080px;
 }
 
 .page-container {
-    margin-top: 250px;
+    background-image: url('arkaplan.jpg');
     padding: 0;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     min-height: 35vh;
-
-
 }
 .page-container p{
     color: #ffffff; /*  "Welcome to your first trip with TripAssistantAI! Get started by registering or logging in." renk  */
@@ -67,15 +65,19 @@ main {
 }
 
 .form-container {
+    
     width:max-content;
     padding: 25px;
-    height: max-content;
+    min-height: 35vh;
     background: transparent;
     border: 2px solid rgba(255,255,255,.2);
     backdrop-filter: blur(20px);
     color: #fff;
     border-radius: 10px;
-
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 10vh;
 }
 
 .form-container h2 {

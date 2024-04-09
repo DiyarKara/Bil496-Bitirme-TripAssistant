@@ -1,0 +1,93 @@
+.translate-container1 *{
+    font-family: 'roboto', sans-serif;
+}
+
+
+.translate-container1 body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #ffffff;
+}
+
+
+
+.translate-container1 select{
+    outline: none;
+    border-style: none;
+    font-size: 15px;
+    font-weight: 500;
+    color: #606060;
+}
+.translate-container1 select[id = "sourceLanguage"]{
+    margin-top: 2.5vh;
+}
+.translate-container1 select[id = "targetLanguage"]{
+    margin-top: 2.5vh;
+    margin-left: 43vh;
+}
+
+.translate-container1 button {
+    margin-left: 44vh;
+}
+
+.translate-container1 {
+    height: 400px;
+    width: 1000px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 20px rgba(0,0,0,.3);
+    border-radius: 5px;
+    margin-top: 10vh;
+    margin-left: 45vh;
+}
+
+
+.translate-container1 textarea[id="sourceText"]{
+    margin-top: 2vh;
+    width: 54vh;
+    height: 332px;
+}
+.translate-container1 textarea[id="translatedText"]{
+    width: 54vh;
+    height: 332px;
+}
+
+
+button:hover {
+    background-color: #45a049;
+}
+
+#logout-button {
+    position: fixed;
+    top: 30px;
+    right: 10px; 
+    padding: 10px;
+    background-color: #f44336;
+    color: white; 
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#logout-button:hover {
+    background-color: #d32f2f; 
+}
+
+#back-button {
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    z-index: 5;
+    background-color: #4CAF50; 
+    color: white;
+    padding: 10px 20px;
+    border: none; 
+    border-radius: 5px;
+    font-size: 16px; 
+    cursor: pointer; 
+  }
+
+  #back-button:hover {
+    background-color: #45a049; 
+  }

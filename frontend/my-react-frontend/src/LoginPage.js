@@ -56,6 +56,7 @@ const LoginPage = () => {
         navigate('/'); // Navigates the user to the previous page
     };
     return (
+        <div className='page'>
         <div className="page-container">
             <header>
                 <nav>
@@ -81,6 +82,7 @@ const LoginPage = () => {
                     )}
                 </form>
             </main>
+        </div>
         </div>
     );
 
