@@ -179,22 +179,7 @@ function ChatPage() {
         content: message.content,
       };
 
-      setPreviousChats((prevChats) => {
-        // Check if the chat log already exists
-        const existingChatIndex = prevChats.findIndex(chat => chat.title === currentTitle);
-      
-        // If the chat log exists, update it; otherwise, append the new chat log
-        if (existingChatIndex !== -1) {
-          console.log("chatlog exist")
-          const updatedChats = [...prevChats];
-          updatedChats[existingChatIndex].content = text; // Update the content
-          return updatedChats;
-        } else {
-          console.log("chat log doesnt exist")
-          // Append the new chat log
-          return [...prevChats, newChat, responseMessage];
-        }
-      });
+      setPreviousChats(prevChats => [...prevChats, newChat, responseMessage]);
       setLocalChats((prevChats) => [...prevChats, newChat, responseMessage]);
 
       const updatedChats = [...localChats, newChat, responseMessage];
@@ -203,7 +188,7 @@ function ChatPage() {
   }, [message, currentTitle]);
 
   const currentChat = (localChats || previousChats).filter(
-    (prevChat) => prevChat.title == currentTitle
+    (prevChat) => prevChat.title === currentTitle
   );
 
   function getUniqueChatTitles(previousChats, localChats) {
@@ -211,7 +196,7 @@ function ChatPage() {
     const uniqueTitles = [];
     const seenTitles = new Set();
   
-    allChats.filter(chat => chat.userId == user.id).forEach(chat => {
+    allChats.filter(chat => chat.userId === user.id).forEach(chat => {
       if (!seenTitles.has(chat.title)) {
         uniqueTitles.push(chat);
         seenTitles.add(chat.title);
