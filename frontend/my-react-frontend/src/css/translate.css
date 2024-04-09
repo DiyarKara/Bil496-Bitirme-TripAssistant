@@ -1,4 +1,4 @@
- *{
+*{
     font-family: 'roboto', sans-serif;
 }
 
@@ -63,7 +63,6 @@
 .text-container textarea[id="sourceText"]{
     height: 332px;
     background-color: #f7f7f7;
-    margin-left: 50px;
 }
 .text-container textarea[id="translatedText"]{
     height: 332px;

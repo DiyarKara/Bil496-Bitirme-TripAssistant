@@ -25,14 +25,14 @@ function Translate() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleTranslate = () => {
+  const handleTranslate = (sourceText1) => {
     fetch('http://localhost:5000/translate_text', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        text: sourceText,
+        text: sourceText1,
         sourceLang: sourceLanguage,
         targetLang: targetLanguage
       })
@@ -79,8 +79,9 @@ function Translate() {
      <div className='text-container-top'>
       <div className='text-container'>
       <textarea id="sourceText" placeholder="Enter text to translate..." value={sourceText} onChange={(e) => {
-                                                                                                                setSourceText(e.target.value) 
-                                                                                                                handleTranslate()}}/>
+                                                                                                                setSourceText(e.target.value)
+                                                                                                                console.log("e target: ", e.target.value) 
+                                                                                                                handleTranslate(e.target.value)}}/>
       </div>
       <div className='text-container'>
       <textarea id="translatedText" placeholder="Translation" value={translatedText} disabled readOnly/>
