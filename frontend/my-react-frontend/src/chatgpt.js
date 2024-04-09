@@ -26,7 +26,7 @@ function ChatGpt() {
   const createNewChat = () => {
     setMessage(null);
     setText("");
-    setCurrentTitle(`Chat ${previousChats.length + 1}`);
+    setCurrentTitle(null);
   };
   const fetchChats = useCallback(async () => {
     try {
@@ -159,6 +159,9 @@ function ChatGpt() {
   }, []);
 
   useEffect(() => {
+    if (!currentTitle && text && message) {
+      setCurrentTitle(text);
+    }
 
     if (currentTitle && text && message) {
       const newChat = {
@@ -193,12 +196,7 @@ function ChatGpt() {
       });
       setLocalChats((prevChats) => [...prevChats, newChat, responseMessage]);
 
-      const updatedChats = [...localChats, newChat, responseMessage].reduce((acc, chat) => {
-        // This assumes that `title` uniquely identifies a chat.
-        // If that's not the case, consider using a different property or a combination.
-        acc[chat.title] = chat;
-        return acc;
-      }, {});
+      const updatedChats = [...localChats, newChat, responseMessage];
       localStorage.setItem("previousChats", JSON.stringify(updatedChats));
     }
   }, [message, currentTitle]);
