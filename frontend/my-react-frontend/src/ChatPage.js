@@ -265,7 +265,7 @@ function ChatPage() {
           {!currentTitle && (
             <div className="empty-chat-container">
               <img
-                src="../images/logo.png"
+                src="./images/logo.svg"
                 width={45}
                 height={45}
                 alt="ChatGPT"
@@ -300,7 +300,7 @@ function ChatPage() {
                         <BiSolidUserCircle size={28.8} />
                       </div>
                     ) : (
-                      <img src="../images/logo.png" alt="ChatGPT" />
+                      <img src="./images/logo.svg" alt="ChatGPT" />
                     )}
                     {isUser ? (
                       <div>
