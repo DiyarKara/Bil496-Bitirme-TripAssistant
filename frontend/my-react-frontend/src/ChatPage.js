@@ -37,7 +37,7 @@ function ChatPage() {
       .filter(chat => chat.userId === user.id);
   
     if (chatsToExport.length > 0) {
-      // Create a Blob from the chats
+      // Create a Blob from the chats/
       const blob = new Blob([JSON.stringify(chatsToExport)], { type: 'application/json' });
       // Create an anchor element and trigger download
       const href = URL.createObjectURL(blob);
