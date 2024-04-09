@@ -36,7 +36,7 @@ function ChatPage() {
   
     try {
       // Replace `URL` with your actual backend endpoint
-      const response = await fetch(`YOUR_BACKEND_ENDPOINT/save_chat`, {
+      const response = await fetch(`${config.backendURL}/save_chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
