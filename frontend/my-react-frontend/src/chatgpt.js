@@ -159,8 +159,8 @@ function ChatGpt() {
   }, []);
 
   useEffect(() => {
-    if (!currentTitle && text && message) {
-      setCurrentTitle(text);
+    if (!currentTitle && text && message) {    
+      setCurrentTitle(`Chat ${getUniqueChatTitles(previousChats,localChats).length + 1}`);
     }
 
     if (currentTitle && text && message) {
