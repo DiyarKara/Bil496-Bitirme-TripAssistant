@@ -73,10 +73,14 @@ def dashboard():
 
 @app.route('/get_chats')
 def get_chats():
-    if 'user_id' not in session:
+    # Get user_id from the query string
+    user_id = request.args.get('userId')
+    print("user id is: ", user_id)
+
+    # If user_id is not provided in the query string, or it's not in session
+    if not user_id or ('user_id' in session and session['user_id'] != user_id):
         return jsonify({'error': 'Unauthorized'}), 401
 
-    user_id = session['user_id']
     chat_logs = ChatLog.query.filter_by(user_id=user_id).all()
     # Convert chat logs to a JSON format
     chats = [{'id': log.id, 'messages': log.messages} for log in chat_logs]
@@ -133,7 +137,7 @@ def login():
         if user:
             session['user_id'] = user.id  # Store the user's ID in the session
             session['username'] = user.username
-            return jsonify({"message":"Success"}),200
+            return jsonify({"id":user.id, "name": user.username}),200
         else:
             flash('Invalid username or password. Please try again.')
 
@@ -252,7 +256,7 @@ def process_message():
         # Assuming the last message in chat_history is the system's response
         last_message = response['chat_history'][-1].content if response['chat_history'] else 'No response'
         print("last message: ", last_message)
-        return jsonify({'response': last_message})
+        return jsonify({'content': last_message,'role':"assistant"})
     except Exception as e:
         # Handle potential exceptions
         print("Error processing message:", e)
@@ -313,14 +317,6 @@ def translate_text():
         # Handle the error or return a message to the frontend
         return jsonify({'error': 'Failed to translate text'}), response.status_code
 
-
-
-@app.route('/translate', methods=['POST'])
-def translate():
-    translator = Translator()
-    text_to_translate = request.form['text']
-    translated_text = translator.translate(text_to_translate, src='en', dest='tr').text
-    return render_template('result.html', translated_text=translated_text)
 
 
 if __name__ == '__main__':
