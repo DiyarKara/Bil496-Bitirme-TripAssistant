@@ -22,6 +22,7 @@ function ChatPage() {
   const [currentTitle, setCurrentTitle] = useState(null);
   const [isResponseLoading, setIsResponseLoading] = useState(false);
   const [errorText, setErrorText] = useState("");
+  const [chatTitles, setChatTitles] = useState({});
   const [isShowSidebar, setIsShowSidebar] = useState(false);
   const scrollToLastItem = useRef(null);
 
@@ -31,27 +32,28 @@ function ChatPage() {
     setCurrentTitle(null);
   };
   const newChat = async () => {
-
-  
     try {
-      // Replace `URL` with your actual backend endpoint
-      const response = await fetch(`${config.backendURL}/save_chat`, {
+      const response = await fetch(`${config.backendURL}/new_chat`, { // Make sure this URL matches your endpoint for creating new chats
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Include other headers as needed, like authorization tokens
         },
-        body: JSON.stringify({messages:[],userId:user.id}),
+        body: JSON.stringify({ userId: user.id }), // Assuming the backend creates a chat with no initial messages
       });
   
-      if (!response.ok) throw new Error('Failed to save chat');
+      if (!response.ok) throw new Error('Failed to create new chat');
   
-      const responseData = await response.json();
-      console.log('Chat saved successfully:', responseData);
-      // Handle success response
+      const responseData = await response.json(); // Assuming the response contains the chat_log_id
+      const { chat_log_id } = responseData.chat_log_id;
+      console.log('New chat created successfully with ID:', chat_log_id);
+  
+      // Update the chatTitles state with the new title and its corresponding chat_log_id
+      const newTitle = `${user.name}'s Chat ${getUniqueChatTitles(previousChats,localChats).length + 1}`; // Adjust title format as needed
+      setChatTitles(prev => ({ ...prev, [newTitle]: chat_log_id }));
+      setCurrentTitle(newTitle); // Set the current title to the new chat
+  
     } catch (error) {
-      console.error('Error saving chat:', error);
-      // Handle error response
+      console.error('Error creating new chat:', error);
     }
   };
   const saveChat = async (chatMessages,currentTitle) => {
@@ -145,7 +147,7 @@ function ChatPage() {
   
     formattedChats.filter(chat => chat.title === currentTitle).forEach(({userId, content}) => {
       chatSession.userId = user.id; // Assuming userId is the same for all messages in the session
-      chatSession.chat_log_id = parseInt(sessionId, 10); // Convert session ID to a number
+      chatSession.chat_log_id = parseInt(chatTitles[currentTitle], 10); // Convert session ID to a number
       chatSession.messages.push(content);
     });
   
@@ -228,7 +230,6 @@ function ChatPage() {
 
   useEffect(() => {
     if (!currentTitle && text && message) {    
-      setCurrentTitle(`${user.name}'s Chat ${getUniqueChatTitles(previousChats,localChats).length + 1}`);
       newChat();
     }
 
