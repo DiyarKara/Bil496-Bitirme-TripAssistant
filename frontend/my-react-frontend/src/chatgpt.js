@@ -212,6 +212,21 @@ function ChatGpt() {
   const localUniqueTitles = Array.from(
     new Set(localChats.map((prevChat) => prevChat.title).reverse())
   ).filter((title) => !uniqueTitles.includes(title));
+  function getUniqueChatTitles(previousChats, localChats) {
+    const allChats = [...previousChats, ...localChats];
+    const uniqueTitles = [];
+    const seenTitles = new Set();
+  
+    allChats.forEach(chat => {
+      if (!seenTitles.has(chat.title)) {
+        uniqueTitles.push(chat);
+        seenTitles.add(chat.title);
+      }
+    });
+  
+    return uniqueTitles;
+  }
+  
   return(
   <div className="ChatGpt">
       <div className="container">
@@ -222,35 +237,17 @@ function ChatGpt() {
           </div>
           <div className="sidebar-history">
             {/* Ongoing chats - populated from backend */}
-            {previousChats.length > 0 && (
-              <>
-                <p>Ongoing</p>
-                <ul>
-        {previousChats
-          .filter(chat => chat.userId === user.id) // Filter chat logs based on user ID
-          .map((chat, idx) => (
-            <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
-              {chat.title}
-            </li>
-          ))}
-      </ul>
-              </>
-            )}
+            
             {/* Example for locally stored chats */}
-            {localChats.length > 0 && (
-              <>
-                <p>Previous</p>
-                <ul>
-        {localChats
-          .filter(chat => chat.userId === user.id) // Filter chat logs based on user ID
-          .map((chat, idx) => (
-            <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
-              {chat.title}
-            </li>
-          ))}
-      </ul>
-              </>
-            )}
+            <p>Chats</p>
+    <ul>
+      {getUniqueChatTitles(previousChats, localChats)
+        .map((chat, idx) => (
+          <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
+            {chat.title}
+          </li>
+        ))}
+    </ul>
           </div>
           <div className="sidebar-info">
             <div className="sidebar-info-upgrade">
