@@ -145,7 +145,7 @@
   
   .ChatPage .sidebar-info-upgrade:hover,
   .ChatPage .sidebar-info-user:hover {
-    cursor: not-allowed;
+    cursor: pointer;
   }
   
   .ChatPage .main {
