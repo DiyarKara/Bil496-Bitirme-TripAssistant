@@ -217,7 +217,7 @@ function ChatGpt() {
     const uniqueTitles = [];
     const seenTitles = new Set();
   
-    allChats.filter(chat => chat.userId == user.id).forEach(chat => {
+    allChats.filter(chat => chat.userId === user.id).forEach(chat => {
       if (!seenTitles.has(chat.title)) {
         uniqueTitles.push(chat);
         seenTitles.add(chat.title);
@@ -241,7 +241,7 @@ function ChatGpt() {
             {/* Example for locally stored chats */}
             <p>Chats</p>
     <ul>
-      {getUniqueChatTitles(previousChats, localChats).filter(chat => chat.userId == user.id)
+      {getUniqueChatTitles(previousChats, localChats).filter(chat => chat.userId === user.id)
         .map((chat, idx) => (
           <li key={idx} onClick={() => backToHistoryPrompt(chat.title)}>
             {chat.title}
