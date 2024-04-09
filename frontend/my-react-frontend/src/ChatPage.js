@@ -33,7 +33,7 @@ function ChatPage() {
   };
   const newChat = async () => {
     try {
-      const response = await fetch(`${config.backendURL}/new_chat`, { // Make sure this URL matches your endpoint for creating new chats
+      const response = await fetch(`${config.backendURL}/save_chat`, { // Make sure this URL matches your endpoint for creating new chats
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
