@@ -54,7 +54,7 @@ function ChatPage() {
       }, []);
       setPreviousChats(prevChats => [...prevChats, ...formattedChats]);
       setLocalChats((prevChats) => [...prevChats, ...formattedChats]);
-      const updatedChats = [...localChats, newChat, responseMessage];
+      const updatedChats = [...localChats];
       localStorage.setItem("previousChats", JSON.stringify(updatedChats));
     } catch (error) {
       console.error('Failed to fetch chats:', error);
