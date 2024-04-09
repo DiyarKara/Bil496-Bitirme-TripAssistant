@@ -11,6 +11,7 @@ import Translate from './Translate';
 import ChatPage from './ChatPage';
 import MapPage from './MapPage';
 import LoginRoute from './LoginRoute';
+import AboutUsPage from './AboutUsPage';
 
 
 function AppWrapper() {
@@ -37,6 +38,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<WelcomePage />} />
+        <Route path="/about-us" element={<AboutUsPage />} />
         <Route path="/login" element={<LoginRoute><LoginPage /></LoginRoute>} />
         <Route path="/register" element={<LoginRoute><RegisterPage /></LoginRoute>} />
         <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
