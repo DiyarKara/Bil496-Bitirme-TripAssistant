@@ -3,10 +3,9 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext'; // Adjust the path as necessary
 
 const LoginRoute = ({ children }) => {
-    const { user, logout} = useAuth();
+    const { user } = useAuth();
 
     if (user) {
-        logout();
         return <Navigate to="/home" />;
     }
 
