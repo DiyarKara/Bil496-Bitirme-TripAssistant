@@ -30,6 +30,30 @@ function ChatPage() {
     setText("");
     setCurrentTitle(null);
   };
+  const newChat = async () => {
+
+  
+    try {
+      // Replace `URL` with your actual backend endpoint
+      const response = await fetch(`${config.backendURL}/save_chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Include other headers as needed, like authorization tokens
+        },
+        body: JSON.stringify({messages:[]}),
+      });
+  
+      if (!response.ok) throw new Error('Failed to save chat');
+  
+      const responseData = await response.json();
+      console.log('Chat saved successfully:', responseData);
+      // Handle success response
+    } catch (error) {
+      console.error('Error saving chat:', error);
+      // Handle error response
+    }
+  };
   const saveChat = async (chatMessages,currentTitle) => {
     // Convert the frontend message format to the backend expected format
     const convertedMessages = reverseTransformation(chatMessages,currentTitle);
@@ -205,6 +229,7 @@ function ChatPage() {
   useEffect(() => {
     if (!currentTitle && text && message) {    
       setCurrentTitle(`${user.name}'s Chat ${getUniqueChatTitles(previousChats,localChats).length + 1}`);
+      newChat();
     }
 
     if (currentTitle && text && message) {
