@@ -15,7 +15,6 @@ import logo from './images/logo.svg';
 function ChatPage() {
   const [text, setText] = useState("");
   const [previousChats, setPreviousChats] = useState([]);
-  const [backendChats, setBackendChats] = useState([]);
   const { user, logout } = useAuth();
   const [message, setMessage] = useState(null);
   const [localChats, setLocalChats] = useState([]);
@@ -30,40 +29,11 @@ function ChatPage() {
     setText("");
     setCurrentTitle(null);
   };
-  const fetchChats = useCallback(async () => {
-    try {
-      // Fetch chats from backend
-      const queryParams = new URLSearchParams({ userId: user.id }).toString();
-      const response = await fetch(`${config.backendURL}/get_chats?${queryParams}`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const chats = await response.json();
   
-      // Filter chats based on userId
-  
-      // Process and set formatted chats
-      const formattedChats = chats.reduce((acc, chat) => {
-        const chatMessages = chat.messages.map((message, index) => ({
-          userId: user.id,
-          title: `${user.name}'s Chat ${chat.id}`,
-          role: index % 2 === 0 ? 'user' : 'assistant',
-          content: message,
-        }));
-        return [...acc, ...chatMessages];
-      }, []);
-      setPreviousChats(prevChats => [...prevChats, ...formattedChats]);
-      setLocalChats((prevChats) => [...prevChats, ...formattedChats]);
-      const updatedChats = [...localChats];
-      localStorage.setItem("previousChats", JSON.stringify(updatedChats));
-    } catch (error) {
-      console.error('Failed to fetch chats:', error);
-    }
-  }, [user.id]);
 
   const exportChatLogs = () => {
     // Retrieve chat logs from local storage or state
-    const chatsToExport = [...backendChats]
+    const chatsToExport = [...localChats, ...previousChats]
       .filter(chat => chat.userId === user.id);
   
     if (chatsToExport.length > 0) {
@@ -84,10 +54,7 @@ function ChatPage() {
   };
   
 
-  // Use useEffect to fetch chats when the component mounts
-  useEffect(() => {
-    fetchChats();
-  }, [fetchChats]); // Empty dependency array means this effect runs only once after the initial render
+  // Use useEffect to fetch chats when the component mounts // Empty dependency array means this effect runs only once after the initial render
 
   // Function to handle click on a chat item
 
@@ -194,7 +161,7 @@ function ChatPage() {
   );
 
   function getUniqueChatTitles(previousChats, localChats) {
-    const allChats = [...previousChats, ...localChats, ...backendChats];
+    const allChats = [...previousChats, ...localChats];
     const uniqueTitles = [];
     const seenTitles = new Set();
   
