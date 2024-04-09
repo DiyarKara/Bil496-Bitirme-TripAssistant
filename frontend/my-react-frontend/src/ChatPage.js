@@ -15,6 +15,7 @@ import logo from './images/logo.svg';
 function ChatPage() {
   const [text, setText] = useState("");
   const [previousChats, setPreviousChats] = useState([]);
+  const [backendChats, setBackendChats] = useState([]);
   const { user, logout } = useAuth();
   const [message, setMessage] = useState(null);
   const [localChats, setLocalChats] = useState([]);
@@ -40,20 +41,19 @@ function ChatPage() {
       const chats = await response.json();
   
       // Filter chats based on userId
-      const filteredChats = chats.filter(chat => chat.userId === user.id);
   
       // Process and set formatted chats
-      const formattedChats = filteredChats.reduce((acc, chat) => {
+      const formattedChats = chats.reduce((acc, chat) => {
         const chatMessages = chat.messages.map((message, index) => ({
-          id: chat.id,
-          title: `Chat ${chat.id}`,
+          userId: user.id,
+          title: `${user.name}'s Chat ${chat.id}`,
           role: index % 2 === 0 ? 'user' : 'assistant',
           content: message,
         }));
         return [...acc, ...chatMessages];
       }, []);
   
-      setPreviousChats(formattedChats);
+      setBackendChats(formattedChats);
     } catch (error) {
       console.error('Failed to fetch chats:', error);
     }
@@ -61,7 +61,7 @@ function ChatPage() {
 
   const exportChatLogs = () => {
     // Retrieve chat logs from local storage or state
-    const chatsToExport = [...previousChats, ...localChats]
+    const chatsToExport = [...backendChats]
       .filter(chat => chat.userId === user.id);
   
     if (chatsToExport.length > 0) {
@@ -192,7 +192,7 @@ function ChatPage() {
   );
 
   function getUniqueChatTitles(previousChats, localChats) {
-    const allChats = [...previousChats, ...localChats];
+    const allChats = [...previousChats, ...localChats, ...backendChats];
     const uniqueTitles = [];
     const seenTitles = new Set();
   
