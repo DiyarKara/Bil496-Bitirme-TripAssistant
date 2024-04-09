@@ -52,8 +52,10 @@ function ChatPage() {
         }));
         return [...acc, ...chatMessages];
       }, []);
-      localStorage.setItem("previousChats", JSON.stringify(formattedChats));
-      localStorage.setItem("deneme", "deneme");
+      setPreviousChats(prevChats => [...prevChats, ...formattedChats]);
+      setLocalChats((prevChats) => [...prevChats, ...formattedChats]);
+      const updatedChats = [...localChats, newChat, responseMessage];
+      localStorage.setItem("previousChats", JSON.stringify(updatedChats));
     } catch (error) {
       console.error('Failed to fetch chats:', error);
     }
