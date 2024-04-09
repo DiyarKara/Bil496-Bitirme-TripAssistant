@@ -22,7 +22,6 @@ function ChatPage() {
   const [currentTitle, setCurrentTitle] = useState(null);
   const [isResponseLoading, setIsResponseLoading] = useState(false);
   const [errorText, setErrorText] = useState("");
-  const [chatTitles, setChatTitles] = useState({});
   const [isShowSidebar, setIsShowSidebar] = useState(false);
   const scrollToLastItem = useRef(null);
 
@@ -48,8 +47,8 @@ function ChatPage() {
       console.log('New chat created successfully with ID:', chat_log_id);
   
       // Update the chatTitles state with the new title and its corresponding chat_log_id
-      const newTitle = `${user.name}'s Chat ${getUniqueChatTitles(previousChats,localChats).length + 1}`; // Adjust title format as needed
-      setChatTitles(prev => ({ ...prev, [newTitle]: chat_log_id }));
+      const newTitle = `${user.name}'s Chat ${chat_log_id}`; // Adjust title format as needed
+
       setCurrentTitle(newTitle); // Set the current title to the new chat
   
     } catch (error) {
@@ -147,7 +146,7 @@ function ChatPage() {
   
     formattedChats.filter(chat => chat.title === currentTitle).forEach(({userId, content}) => {
       chatSession.userId = user.id; // Assuming userId is the same for all messages in the session
-      chatSession.chat_log_id = parseInt(chatTitles[currentTitle], 10); // Convert session ID to a number
+      chatSession.chat_log_id = parseInt(chat.id, 10); // Convert session ID to a number
       chatSession.messages.push(content);
     });
   
@@ -231,8 +230,8 @@ function ChatPage() {
   useEffect(() => {
     if (!currentTitle && text && message) {    
       newChat();
-      const newTitle = `${user.name}'s Chat ${getUniqueChatTitles(previousChats,localChats).length + 1}`;
-      setCurrentTitle(newTitle);
+      const newTitle = `${user.name}'s Chat ${chat_log_id}`; // Adjust title format as needed
+      setCurrentTitle(newTitle); // Set the current title to the new chat
     }
 
     if (currentTitle && text && message) {
