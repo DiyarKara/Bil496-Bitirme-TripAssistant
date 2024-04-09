@@ -152,7 +152,7 @@ function ChatPage() {
   }, []);
 
   useEffect(() => {
-    const storedChats = localStorage.getItem("previousChats");
+    const storedChats = backendChats;
 
     if (storedChats) {
       setLocalChats(JSON.parse(storedChats));
