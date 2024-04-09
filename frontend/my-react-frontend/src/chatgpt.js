@@ -217,7 +217,7 @@ function ChatGpt() {
     const uniqueTitles = [];
     const seenTitles = new Set();
   
-    allChats.forEach(chat => {
+    allChats.filter(chat => chat.userId == user.id).forEach(chat => {
       if (!seenTitles.has(chat.title)) {
         uniqueTitles.push(chat);
         seenTitles.add(chat.title);
