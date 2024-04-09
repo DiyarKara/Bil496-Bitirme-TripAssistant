@@ -31,28 +31,27 @@ function ChatPage() {
     setCurrentTitle(null);
   };
   const newChat = async () => {
+
+  
     try {
-      const response = await fetch(`${config.backendURL}/save_chat`, { // Make sure this URL matches your endpoint for creating new chats
+      // Replace `URL` with your actual backend endpoint
+      const response = await fetch(`${config.backendURL}/save_chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          // Include other headers as needed, like authorization tokens
         },
-        body: JSON.stringify({ messages:[],userId: user.id }), // Assuming the backend creates a chat with no initial messages
+        body: JSON.stringify({messages:[],userId:user.id}),
       });
   
-      if (!response.ok) throw new Error('Failed to create new chat');
+      if (!response.ok) throw new Error('Failed to save chat');
   
-      const responseData = await response.json(); // Assuming the response contains the chat_log_id
-      const { chat_log_id } = responseData.chat_log_id;
-      console.log('New chat created successfully with ID:', chat_log_id);
-  
-      // Update the chatTitles state with the new title and its corresponding chat_log_id
-      const newTitle = `${user.name}'s Chat ${chat_log_id}`; // Adjust title format as needed
-
-      setCurrentTitle(newTitle); // Set the current title to the new chat
-  
+      const responseData = await response.json();
+      console.log('Chat saved successfully:', responseData);
+      // Handle success response
     } catch (error) {
-      console.error('Error creating new chat:', error);
+      console.error('Error saving chat:', error);
+      // Handle error response
     }
   };
   const saveChat = async (chatMessages,currentTitle) => {
@@ -144,9 +143,9 @@ function ChatPage() {
     // Extract the chat session ID from the title, assuming there's only one currentTitle
     const sessionId = currentTitle.split(' ')[2]; // Assumes title format is "username's Chat X"
   
-    formattedChats.filter(chat => chat.title === currentTitle).forEach(({userId, id,content}) => {
+    formattedChats.filter(chat => chat.title === currentTitle).forEach(({userId, content}) => {
       chatSession.userId = user.id; // Assuming userId is the same for all messages in the session
-      chatSession.chat_log_id = parseInt(id, 10); // Convert session ID to a number
+      chatSession.chat_log_id = parseInt(sessionId, 10); // Convert session ID to a number
       chatSession.messages.push(content);
     });
   
@@ -229,9 +228,8 @@ function ChatPage() {
 
   useEffect(() => {
     if (!currentTitle && text && message) {    
+      setCurrentTitle(`${user.name}'s Chat ${getUniqueChatTitles(previousChats,localChats).length + 1}`);
       newChat();
-      const newTitle = `${user.name}'s Chat ${getUniqueChatTitles(previousChats,localChats).length + 1}`; // Adjust title format as needed
-      setCurrentTitle(newTitle); // Set the current title to the new chat
     }
 
     if (currentTitle && text && message) {
