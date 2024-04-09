@@ -30,9 +30,9 @@ function ChatPage() {
     setText("");
     setCurrentTitle(null);
   };
-  const saveChat = async (chatMessages) => {
+  const saveChat = async (chatMessages,currentTitle) => {
     // Convert the frontend message format to the backend expected format
-    const convertedMessages = reverseTransformation(chatMessages);
+    const convertedMessages = reverseTransformation(chatMessages,currentTitle);
   
     try {
       // Replace `URL` with your actual backend endpoint
@@ -108,11 +108,11 @@ function ChatPage() {
       alert("No chat logs to export.");
     }
   };
-  const reverseTransformation = (formattedChats) => {
+  const reverseTransformation = (formattedChats,currentTitle) => {
     // Use a Map to group messages by their chat session (based on title)
     const chatSessions = new Map();
   
-    formattedChats.forEach(({userId, title, content}) => {
+    formattedChats.filter(chat => chat.title === currentTitle).forEach(({userId, title, content}) => {
       // Extract the chat session ID from the title
       const sessionId = title.split(' ')[2]; // Assumes title format is "username's Chat X"
   
@@ -122,6 +122,7 @@ function ChatPage() {
       } else {
         // Otherwise, create a new session entry in the Map
         chatSessions.set(sessionId, {
+          userId:user.id,
           id: parseInt(sessionId, 10), // Convert session ID to a number
           messages: [content]
         });
@@ -202,13 +203,7 @@ function ChatPage() {
     };
   }, []);
 
-  useEffect(() => {
-    const storedChats = localStorage.getItem("previousChats");
 
-    if (storedChats) {
-      setLocalChats(JSON.parse(storedChats));
-    }
-  }, []);
 
   useEffect(() => {
     if (!currentTitle && text && message) {    
@@ -234,7 +229,7 @@ function ChatPage() {
       setLocalChats((prevChats) => [...prevChats, newChat, responseMessage]);
 
       const updatedChats = [...localChats, newChat, responseMessage];
-      saveChat(updatedChats);
+      saveChat(updatedChats,currentTitle);
       //localStorage.setItem("previousChats", JSON.stringify(updatedChats));
     }
   }, [message, currentTitle]);
