@@ -252,11 +252,11 @@ function ChatPage() {
           <div className="sidebar-info">
             <div className="sidebar-info-upgrade">
               <BiUser size={20} />
-              <p>Upgrade plan</p>
+              <p>Logout</p>
             </div>
             <div className="sidebar-info-user">
               <BiSolidUserCircle size={20} />
-              <p>User</p>
+              <p>Welcome ${user.name}</p>
             </div>
           </div>
         </section>
@@ -270,7 +270,7 @@ function ChatPage() {
                 height={45}
                 alt="ChatGPT"
               />
-              <h1>Chat GPT Clone</h1>
+              <h1>${config.projectName}</h1>
               <h3>How can I help you today?</h3>
             </div>
           )}
@@ -309,7 +309,7 @@ function ChatPage() {
                       </div>
                     ) : (
                       <div>
-                        <p className="role-title">ChatGPT</p>
+                        <p className="role-title">${config.projectName}</p>
                         <p>{chatMsg.content}</p>
                       </div>
                     )}
@@ -336,7 +336,7 @@ function ChatPage() {
               )}
             </form>
             <p>
-              ChatGPT can make mistakes. Consider checking important
+              ${config.projectName} can make mistakes. Consider checking important
               information.
             </p>
             <button onClick={exportChatLogs}>Export Chat</button>
