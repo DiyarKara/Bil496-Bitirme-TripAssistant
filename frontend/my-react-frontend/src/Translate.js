@@ -45,10 +45,6 @@ function Translate() {
       console.error('Error:', error);
     });
   };
-
-  const swapLanguages = () => {
-
-  };
   const handleBack = () => {
     navigate('/'); // Navigates the user to the previous page
   };
@@ -82,7 +78,7 @@ function Translate() {
      </div>
      <div className='text-container-top'>
       <div className='text-container'>
-      <textarea id="sourceText" placeholder="Enter text to translate..." value={sourceText}  onChange={(e) => {
+      <textarea id="sourceText" placeholder="Enter text to translate..." value={sourceText} onChange={(e) => {
                                                                                                                 setSourceText(e.target.value) 
                                                                                                                 handleTranslate()}}/>
       </div>

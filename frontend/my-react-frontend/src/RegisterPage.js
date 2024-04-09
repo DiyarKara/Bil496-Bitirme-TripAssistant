@@ -60,6 +60,7 @@ const RegisterPage = () => {
     // Navigate to the About Us page
 
     return (
+        
         <div className="page-container">
             <header>
                 <nav>
@@ -68,7 +69,9 @@ const RegisterPage = () => {
                     <Link to="/about-us" className="nav-link">About Us</Link>
                 </nav>
             </header>
+            <textarea id="null" disabled/>
             <main className="form-container">
+
             <form onSubmit={handleSubmit}>
                     <h2>Register</h2> {/* Form title for consistency */}
                     <input
