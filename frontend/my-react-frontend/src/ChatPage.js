@@ -203,22 +203,15 @@ function ChatPage() {
   }, [message, currentTitle]);
 
   const currentChat = (localChats || previousChats).filter(
-    (prevChat) => prevChat.title === currentTitle
+    (prevChat) => prevChat.title == currentTitle
   );
 
-  const uniqueTitles = Array.from(
-    new Set(previousChats.map((prevChat) => prevChat.title).reverse())
-  );
-
-  const localUniqueTitles = Array.from(
-    new Set(localChats.map((prevChat) => prevChat.title).reverse())
-  ).filter((title) => !uniqueTitles.includes(title));
   function getUniqueChatTitles(previousChats, localChats) {
     const allChats = [...previousChats, ...localChats];
     const uniqueTitles = [];
     const seenTitles = new Set();
   
-    allChats.filter(chat => chat.userId === user.id).forEach(chat => {
+    allChats.filter(chat => chat.userId == user.id).forEach(chat => {
       if (!seenTitles.has(chat.title)) {
         uniqueTitles.push(chat);
         seenTitles.add(chat.title);
