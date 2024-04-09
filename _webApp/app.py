@@ -164,10 +164,13 @@ def test_db():
     
 @app.route('/save_chat', methods=['POST'])
 def save_chat():
-    if 'user_id' not in session:
+    user_id = request.json.get('userId')
+    print("user id is: ", user_id)
+
+    # If user_id is not provided in the query string, or it's not in session
+    if not user_id or ('user_id' in session and session['user_id'] != user_id):
         return jsonify({'error': 'Unauthorized'}), 401
 
-    user_id = session['user_id']
     messages = request.json.get('messages')
     chat_log_id = request.json.get('chat_log_id')  # Get chat log ID
     print("chat log id in save: ", chat_log_id)
@@ -237,7 +240,9 @@ def get_conversation_chain(vectorstore):
     )
     return conversation_chain
 
-pdf_docs = ["C:\\Users\\diyar\\Desktop\\bil496\\webapp\\romePdf\\rome_guide.pdf", "C:\\Users\\diyar\\Desktop\\bil496\\webapp\\romePdf\\WhereRome-AUG2020Web.pdf"]  # PDF file paths
+#pdf_docs = ["C:\\Users\\diyar\\Desktop\\bil496\\webapp\\romePdf\\rome_guide.pdf", "C:\\Users\\diyar\\Desktop\\bil496\\webapp\\romePdf\\WhereRome-AUG2020Web.pdf"]  # PDF file paths
+pdf_docs = ["./romePdf/rome_guide.pdf", "./romePdf/WhereRome-AUG2020Web.pdf", "./parisPdf/paris_travel_guide.pdf", "./parisPdf/5-day_Paris_PromptGuide_v1.0.pdf"]  # PDF file paths
+
 raw_text = get_pdf_text(pdf_docs)
 text_chunks = get_text_chunks(raw_text)
 print("text chunk len: ", len(text_chunks))
