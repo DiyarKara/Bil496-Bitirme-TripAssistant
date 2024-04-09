@@ -53,6 +53,7 @@ function ChatPage() {
         return [...acc, ...chatMessages];
       }, []);
       localStorage.setItem("previousChats", JSON.stringify(formattedChats));
+      localStorage.setItem("deneme", "deneme");
     } catch (error) {
       console.error('Failed to fetch chats:', error);
     }
