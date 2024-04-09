@@ -7,7 +7,7 @@ const LoginRoute = ({ children }) => {
 
     if (user) {
         logout();
-        return <Navigate to="/" />;
+        return <Navigate to="/home" />;
     }
 
     return children;
