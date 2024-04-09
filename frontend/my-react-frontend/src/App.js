@@ -8,9 +8,9 @@ import RegisterPage from './RegisterPage';
 import WelcomePage from './WelcomePage';
 import HomePage from './HomePage';
 import Translate from './Translate';
-import ChatGpt from './chatgpt';
-import SidebarHistory from './SidebarHistory';
+import ChatPage from './ChatPage';
 import MapPage from './MapPage';
+import LoginRoute from './LoginRoute';
 
 
 function AppWrapper() {
@@ -37,12 +37,11 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<WelcomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginRoute><LoginPage /></LoginRoute>} />
+        <Route path="/register" element={<LoginRoute><RegisterPage /></LoginRoute>} />
         <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
         <Route path="/translate" element={<ProtectedRoute><Translate /></ProtectedRoute>} />
-        <Route path="/chat" element={<ChatGpt />} />
-        <Route path="/test" element={<SidebarHistory />} />
+        <Route path="/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
         <Route path="/map" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
         {/* Add more routes and wrap them with ProtectedRoute as needed for protection */}
       </Routes>

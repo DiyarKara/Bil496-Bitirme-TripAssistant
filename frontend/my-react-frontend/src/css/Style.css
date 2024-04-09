@@ -5,19 +5,23 @@ body, html {
     width: 100%;
 }
 body{
-    background-image: url('arkaplan.jpg');
+    background-image: url('../images/arkaplan.jpg');
 }
-
 .page-container {
-    margin-top: 250px;
     padding: 0;
     box-sizing: border-box;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 35vh;
-
-
+    display:flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items:center;
+}
+.page-container textarea{
+    height: 200px;
+    width: 200px;
+    border-style: none;
+    outline: none;
+    resize: none;
+    background: transparent;
 }
 .page-container p{
     color: #ffffff; /*  "Welcome to your first trip with TripAssistantAI! Get started by registering or logging in." renk  */
@@ -53,13 +57,15 @@ nav a {
     color: white;
     padding: 10px 20px;
     margin: 10px;
-    border-radius: 5px;
+    border-radius: 25px;
     text-decoration: none;
     transition: background-color 0.3s;
 }
 
 nav a:hover {
     background-color: #0056b3;
+    transition: background-color 0.3s;
+    border-radius: 25px;
 }
 
 
@@ -72,13 +78,12 @@ nav a:hover {
     border: 2px solid rgba(255,255,255,.2);
     backdrop-filter: blur(20px);
     color: #fff;
-    border-radius: 10px;
+    border-radius: 25px;
 
 }
 
 .form-container h2 {
     text-align: center;
-    
 }
 
 .form-container input[type="text"],
@@ -125,7 +130,7 @@ nav a:hover {
     flex-grow: 1; /* Ensures buttons grow equally to fill the container */
     padding: 10px;
     border: none;
-    border-radius: 5px;
+    border-radius: 25px;
     cursor: pointer;
     transition: background-color 0.3s;
     margin: 0 10px; /* Adjust the spacing between the buttons */
@@ -133,6 +138,8 @@ nav a:hover {
 .back-btn, .submit-btn {
     width: calc(50% - 20px); /* Adjusts width to account for margin, ensuring equal width */
     padding: 10px 20px; /* Ensures equal padding */
+    border-radius: 25px;
+
 }
 
 .back-btn {
@@ -167,13 +174,15 @@ nav a:hover {
     color: white;
     padding: 10px 20px;
     margin: 10px;
-    border-radius: 5px;
+    border-radius: 25px;
     text-decoration: none;
     transition: background-color 0.3s;
 }
 
 .nav-link:hover {
     background-color: #0056b3;
+    border-radius: 25px;
+
 }
 
 
@@ -183,11 +192,15 @@ nav a:hover {
     color: blue; /* Or whatever your link color is */
     text-decoration: underline;
     cursor: pointer;
+    border-radius: 25px;
+
 }
 
 .link-button:hover,
 .link-button:focus {
     text-decoration: none;
+    border-radius: 25px;
+
 }
 .nav-text {
     cursor: pointer;
@@ -199,6 +212,8 @@ nav a:hover {
 
 .nav-text:hover {
     text-decoration: underline; /* Optional, to indicate interactivity */
+    border-radius: 25px;
+
 }
 .messages-success {
     color: green;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import './Style.css'; // Ensure this points to your CSS file's correct path
+import './css/Style.css'; // Ensure this points to your CSS file's correct path
 import { Link } from 'react-router-dom';
 import config from './config'; // Assuming this exists for project configuration
 

@@ -1,4 +1,4 @@
-.ChatGpt * {
+.ChatPage * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -17,17 +17,17 @@
     color: #ececf1;
   }
   
-  .ChatGpt ul {
+  .ChatPage ul {
     list-style-type: none;
   }
   
-  .ChatGpt button {
+  .ChatPage button {
     border: none;
     background-color: unset;
     cursor: pointer;
   }
   
-  .ChatGpt .container {
+  .ChatPage .container {
     height: 100vh;
     width: 100vw; /* Adjust width to fill viewport */
     display: grid;
@@ -35,7 +35,7 @@
     background-color: #343541;
   }
   
-  .ChatGpt .burger {
+  .ChatPage .burger {
     position: absolute;
     top: 50%;
     left: 0;
@@ -44,7 +44,7 @@
     cursor: pointer;
   }
   
-  .ChatGpt .sidebar {
+  .ChatPage .sidebar {
     width: 16rem;
     padding: 1rem;
     gap: 1rem;
@@ -57,7 +57,7 @@
     transition: all 0.3s ease;
   }
   
-  .ChatGpt .sidebar.open {
+  .ChatPage .sidebar.open {
     width: 0;
     padding: 0;
     opacity: 0;
@@ -65,7 +65,7 @@
     filter: blur(14px);
   }
   
-  .ChatGpt .sidebar-header {
+  .ChatPage .sidebar-header {
     width: 100%;
     display: flex;
     align-items: center;
@@ -76,17 +76,17 @@
     cursor: pointer;
   }
   
-  .ChatGpt .sidebar-header:hover {
+  .ChatPage .sidebar-header:hover {
     background-color: #2b2c2f;
   }
   
-  .ChatGpt .sidebar-history {
+  .ChatPage .sidebar-history {
     width: 100%;
     height: 100vh;
     overflow: auto;
   }
   
-  .ChatGpt .sidebar-history p {
+  .ChatPage .sidebar-history p {
     position: sticky;
     top: 0;
     background-color: rgb(32, 33, 35);
@@ -97,7 +97,7 @@
     z-index: 1;
   }
   
-  .ChatGpt .sidebar li {
+  .ChatPage .sidebar li {
     position: relative;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -105,7 +105,7 @@
     white-space: nowrap;
   }
   
-  .ChatGpt .sidebar .li-overflow-shadow:not(:hover)::after {
+  .ChatPage .sidebar .li-overflow-shadow:not(:hover)::after {
     content: "‎";
     position: absolute;
     bottom: 0.5rem;
@@ -121,34 +121,34 @@
     z-index: 1;
   }
   
-  .ChatGpt .sidebar-info {
+  .ChatPage .sidebar-info {
     width: 100%;
     padding-top: 1rem;
     border-top: 0.05rem solid rgba(255, 255, 255, 0.5);
   }
   
-  .ChatGpt .sidebar-info-upgrade,
-  .ChatGpt .sidebar-info-user {
+  .ChatPage .sidebar-info-upgrade,
+  .ChatPage .sidebar-info-user {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem;
   }
   
-  .ChatGpt .sidebar li:hover,
-  .ChatGpt .sidebar-info-upgrade:hover,
-  .ChatGpt .sidebar-info-user:hover {
+  .ChatPage .sidebar li:hover,
+  .ChatPage .sidebar-info-upgrade:hover,
+  .ChatPage .sidebar-info-user:hover {
     background-color: #343541;
     border-radius: 0.3rem;
     cursor: pointer;
   }
   
-  .ChatGpt .sidebar-info-upgrade:hover,
-  .ChatGpt .sidebar-info-user:hover {
-    cursor: not-allowed;
+  .ChatPage .sidebar-info-upgrade:hover,
+  .ChatPage .sidebar-info-user:hover {
+    cursor: pointer;
   }
   
-  .ChatGpt .main {
+  .ChatPage .main {
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -159,11 +159,11 @@
     overflow: hidden;
   }
   
-  .ChatGpt .main h1 {
+  .ChatPage .main h1 {
     font-size: 2rem;
   }
   
-  .ChatGpt .main-header {
+  .ChatPage .main-header {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -172,7 +172,7 @@
     overflow: auto;
   }
   
-  .ChatGpt .main-header li {
+  .ChatPage .main-header li {
     display: flex;
     align-items: center;
     gap: 1.5rem;
@@ -182,59 +182,59 @@
     border-radius: 0.3rem;
   }
   
-  .ChatGpt .main-header li:nth-child(odd) {
+  .ChatPage .main-header li:nth-child(odd) {
     background-color: unset;
   }
   
-  .ChatGpt .main-header li:nth-child(even) {
+  .ChatPage .main-header li:nth-child(even) {
     background-color: #444655;
   }
   
-  .ChatGpt .main-header img:not(:nth-child(even)) {
+  .ChatPage .main-header img:not(:nth-child(even)) {
     display: block;
     border-radius: 0.3rem;
     width: 1.8rem;
     height: 1.8rem;
   }
   
-.ChatGpt .role-title {
+.ChatPage .role-title {
     font-size: 1rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
   }
   
-  .ChatGpt .main-bottom {
+  .ChatPage .main-bottom {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
   }
   
-  .ChatGpt .main-bottom p:first-child {
+  .ChatPage .main-bottom p:first-child {
     padding-top: 0.5rem;
   }
   
-  .ChatGpt .main-bottom p {
+  .ChatPage .main-bottom p {
     font-size: 0.8rem;
     text-align: center;
     color: #c3c3d1;
   }
   
-  .ChatGpt .empty-chat-container {
+  .ChatPage .empty-chat-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1rem;
   }
   
-  .ChatGpt .empty-chat-container h3 {
+  .ChatPage .empty-chat-container h3 {
     font-weight: 500;
   }
   
-  .ChatGpt .errorText {
+  .ChatPage .errorText {
     margin: 0 auto;
   }
   
-  .ChatGpt .form-container {
+  .ChatPage .form-container {
     width: 50rem;
     padding: 0.3rem 1.6rem;
     margin: 0 auto;
@@ -250,7 +250,7 @@
       rgb(0, 0, 0, 0.05) 0 0.2rem 0.3rem;
   }
   
-  .ChatGpt .form-container input {
+  .ChatPage .form-container input {
     width: 100%;
     height: 3rem;
     font-size: 1rem;
@@ -260,34 +260,34 @@
     border: none;
   }
   
-  .ChatGpt .form-container input::placeholder {
+  .ChatPage .form-container input::placeholder {
     color: #8e8fa1;
   }
   
-  .ChatGpt .form-container svg {
+  .ChatPage .form-container svg {
     fill: #8e8fa1;
     transform: rotate(-45deg);
   }
   
-  .ChatGpt .form-container svg:hover {
+  .ChatPage .form-container svg:hover {
     fill: #ececf1;
   }
   
   @media screen and (min-width: 1280px) {
-    .ChatGpt .main-header li {
+    .ChatPage .main-header li {
       margin: 1rem auto;
       width: 50rem;
     }
   }
   
   @media screen and (max-width: 1080px) {
-    .ChatGpt .form-container {
+    .ChatPage .form-container {
       width: auto;
     }
   }
   
   @media screen and (max-width: 640px) {
-    .ChatGpt .main-header li {
+    .ChatPage .main-header li {
       gap: 1rem;
     }
   }

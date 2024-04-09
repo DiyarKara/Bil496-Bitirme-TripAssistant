@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import image1 from './trans.png'; // Importing image 1
-import image2 from './map.png'; // Importing image 2
-import image3 from './chat.png'; // Importing image 3
-import customCursor from './cursor.png';
+import image1 from './images/trans.png'; // Importing image 1
+import image2 from './images/map.png'; // Importing image 2
+import image3 from './images/chat.png'; // Importing image 3
+import customCursor from './images/cursor.png';
 
 
 const ImageContainer = styled.div`
