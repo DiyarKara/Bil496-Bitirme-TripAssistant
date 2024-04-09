@@ -10,6 +10,7 @@ import { MdOutlineArrowLeft, MdOutlineArrowRight } from "react-icons/md";
 import './css/Chat.css';
 import { useAuth } from './AuthContext';
 import config from './config';
+import './images/logo.svg';
 
 function ChatPage() {
   const [text, setText] = useState("");
