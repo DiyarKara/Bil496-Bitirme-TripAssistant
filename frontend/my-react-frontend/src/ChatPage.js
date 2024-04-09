@@ -41,7 +41,7 @@ function ChatPage() {
           'Content-Type': 'application/json',
           // Include other headers as needed, like authorization tokens
         },
-        body: JSON.stringify({messages:[],userIs:user.id}),
+        body: JSON.stringify({messages:[],userId:user.id}),
       });
   
       if (!response.ok) throw new Error('Failed to save chat');
